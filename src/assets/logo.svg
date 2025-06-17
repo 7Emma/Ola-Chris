@@ -1,0 +1,43 @@
+<svg width="320" height="150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond blanc -->
+  <rect width="100%" heigh="100%"/>
+
+  <!-- Cercle vert avec panier -->
+  <circle
+    cx="60"
+    cy="75"
+    r="40"
+    stroke="#4CAF50"
+    stroke-width="6"
+    fill="none"
+  />
+  <text x="45" y="85" font-size="35" font-family="Arial" fill="#0D47A1">
+    🛒
+  </text>
+
+  <!-- Texte "Ola-Chris" en bleu -->
+  <text
+    x="120"
+    y="80"
+    font-size="40"
+    font-family="Arial"
+    fill="#0D47A1"
+    letter-spacing="2"
+  >
+    Ola-Chris
+  </text>
+
+  <!-- Texte "Market" en vert stylisé -->
+  <text
+    x="200"
+    y="110"
+    font-size="35"
+    font-family="Brush Script MT, cursive"
+    fill="#4CAF50"
+  >
+    market
+  </text>
+
+  <!-- Ligne verte décorative -->
+  <rect x="120" y="100" width="70" height="5" fill="#4CAF50" />
+</svg>
