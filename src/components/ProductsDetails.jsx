@@ -160,11 +160,11 @@ const ProductDetails = ({ product, isOpen, onClose, onAddToCart, onUpdateQuantit
                 {/* Price */}
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl font-bold text-gray-900">
-                    {product.price.toFixed(2)} €
+                    {product.price.toFixed(2)} FCFA
                   </span>
                   {product.originalPrice && product.originalPrice > product.price && (
                     <span className="text-lg text-gray-500 line-through">
-                      {product.originalPrice.toFixed(2)} €
+                      {product.originalPrice.toFixed(2)} FCFA
                     </span>
                   )}
                   {product.unit && (
@@ -248,13 +248,13 @@ const ProductDetails = ({ product, isOpen, onClose, onAddToCart, onUpdateQuantit
                   }`}
                 >
                   <ShoppingCart size={20} />
-                  {isInStock ? `Ajouter au panier - ${(product.price * quantity).toFixed(2)} €` : 'Produit indisponible'}
+                  {isInStock ? `Ajouter au panier - ${(product.price * quantity).toFixed(2)} FCFA` : 'Produit indisponible'}
                 </button>
 
                 {/* Delivery Info */}
                 <div className="flex items-center gap-2 mt-3 text-sm text-gray-600">
                   <Truck size={16} />
-                  <span>Livraison gratuite dès 50€ d'achat</span>
+                  <span>Livraison gratuite dès 50000 FCFA d'achat</span>
                 </div>
               </div>
 

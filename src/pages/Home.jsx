@@ -7,7 +7,7 @@ import equipe2 from "../assets/equipe/equipe2.jpg"
 import equipe3 from "../assets/equipe/equipe3.jpg"
 import equipe4 from "../assets/equipe/equipe4.jpg"
 import photoAcceuil from '../assets/bg/home.jpg'
-
+import { Link } from "react-router-dom";
 import {
   Search,
   Star,

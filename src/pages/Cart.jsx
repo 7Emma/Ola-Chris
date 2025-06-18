@@ -168,7 +168,7 @@ const Cart = ({
                   {/* Item Total */}
                   <div className="text-right">
                     <p className="font-semibold text-gray-900">
-                      {(item.price * item.quantity).toFixed(2)} €
+                      {(item.price * item.quantity).toFixed(2)} FCFA
                     </p>
                     {item.quantity >= item.stock && (
                       <p className="text-xs text-orange-500 mt-1">
@@ -229,7 +229,7 @@ const Cart = ({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Sous-total</span>
-                <span>{subtotal.toFixed(2)} €</span>
+                <span>{subtotal.toFixed(2)} FCFA</span>
               </div>
 
               <div className="flex justify-between">
@@ -250,7 +250,7 @@ const Cart = ({
               {appliedPromo && (
                 <div className="flex justify-between text-green-600">
                   <span>Réduction ({appliedPromo.code})</span>
-                  <span>-{promoDiscount.toFixed(2)} €</span>
+                  <span>-{promoDiscount.toFixed(2)} FCFA</span>
                 </div>
               )}
 

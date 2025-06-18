@@ -138,7 +138,7 @@ function Navbar({
                 Produits
               </Link>
               <Link
-                to="/products"
+                to="/offer"
                 className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-1.5 rounded-full font-semibold hover:from-green-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-200 shadow-lg"
               >
                 Acheter

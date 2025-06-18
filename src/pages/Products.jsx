@@ -1,48 +1,37 @@
-import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  List,
-} from "lucide-react";
-// Supprimez cette ligne pour éviter la double navbar
-// import Navbar from '../components/Navbar';
+import React, { useState, useEffect, useCallback } from "react";
+import { Grid, List, Search, ShoppingCart } from "lucide-react";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductCard from "../components/ProductCard";
 import ProductDetails from "../components/ProductsDetails";
-import Cart from "./Cart";
-import {
-  getAllProducts,
-  getProductsByCategory,
-  searchProducts,
-} from "../data/products";
+import { getAllProducts } from "../data/products";
+import { getAllCategories } from "../data/categories";
 
 const Products = ({
-  // Props qui viendront du composant parent (App.js)
+  // Props venant du composant parent (App.jsx via AppRoutes)
   searchTerm = "",
   onSearchChange,
   cartItems = [],
   onAddToCart,
   onUpdateCartQuantity,
-  onRemoveFromCart,
-  onClearCart,
-  isCartOpen,
-  onCloseCart,
 }) => {
-  // États principaux
+  //États principaux
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isProductDetailsOpen, setIsProductDetailsOpen] = useState(false);
-
-  // États pour les filtres et vues
-  const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("name");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [priceRange, setPriceRange] = useState([0, 50000]);
-  const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Chargement initial des produits
+  //États pour les filtres et la recherche
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [priceRange, setPriceRange] = useState([0, 50000]);
+
+  //États pour le tri
+  const [sortBy, setSortBy] = useState("name"); // Critère de tri : 'name', 'price', 'rating'
+  const [sortOrder, setSortOrder] = useState("asc"); // Ordre de tri : 'asc' ou 'desc'
+
+  //États pour l'affichage et les modales
+  const [viewMode, setViewMode] = useState("grid");
+  const [selectedProduct, setSelectedProduct] = useState(null); // Produit actuellement affiché dans la modale des détails
+  const [isProductDetailsOpen, setIsProductDetailsOpen] = useState(false); // État d'ouverture de la modale des détails du produit
+
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => {
@@ -52,37 +41,44 @@ const Products = ({
     }, 500);
   }, []);
 
-  // Filtrage et recherche - CORRIGÉ POUR SLUG
   useEffect(() => {
-    let result = [...products]; // Copie du tableau
+    let result = [...products];
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const categoriesData = getAllCategories();
 
-    // Recherche par terme AVANT le filtrage par catégorie
-    if (searchTerm && searchTerm.trim()) {
-      result = result.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    // 1. Recherche par terme (Nom, Description, Marque, et Nom de Catégorie)
+    if (lowerCaseSearchTerm && lowerCaseSearchTerm.trim()) {
+      result = result.filter((product) => {
+        // Trouver le nom de la catégorie pour le produit actuel
+        const categoryName = categoriesData.find(
+          (cat) => cat.id === product.categoryId
+        )?.name;
+
+        return (
+          product.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+          product.description.toLowerCase().includes(lowerCaseSearchTerm) ||
+          (product.brand &&
+            product.brand.toLowerCase().includes(lowerCaseSearchTerm)) || // Vérifier l'existence de la marque
+          (categoryName &&
+            categoryName.toLowerCase().includes(lowerCaseSearchTerm)) // Vérifier l'existence du nom de catégorie
+        );
+      });
     }
 
-    // CORRECTION: Filtrage par catégorie - comparer avec product.category et le slug de la catégorie
+    //Filtrer par catégorie sélectionnée
     if (selectedCategory !== "all") {
       result = result.filter(
-        (product) => product.category === selectedCategory // product.category doit correspondre au slug
+        (product) => product.categoryId === parseInt(selectedCategory, 10)
       );
     }
 
-    // Filtrage par prix
+    //Filtrer par plage de prix
     result = result.filter(
       (product) =>
         product.price >= priceRange[0] && product.price <= priceRange[1]
     );
 
-    // Tri
+    //Trier les produits
     result.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -93,7 +89,7 @@ const Products = ({
           comparison = a.price - b.price;
           break;
         case "rating":
-          comparison = (b.rating || 0) - (a.rating || 0);
+          comparison = (b.rating || 0) - (a.rating || 0); // Décroissant pour la note
           break;
         default:
           comparison = 0;
@@ -104,26 +100,29 @@ const Products = ({
     setFilteredProducts(result);
   }, [products, selectedCategory, searchTerm, sortBy, sortOrder, priceRange]);
 
-  // Fonction pour obtenir la quantité dans le panier
-  const getCartQuantity = (productId) => {
-    const item = cartItems.find((item) => item.id === productId);
-    return item ? item.quantity : 0;
-  };
+  //Aide à la quantité du panier (useCallback pour l'optimisation
+  const getCartQuantity = useCallback(
+    (productId) => {
+      const item = cartItems.find((item) => item.id === productId);
+      return item ? item.quantity : 0;
+    },
+    [cartItems]
+  );
 
-  // Gestion des détails produit
-  const openProductDetails = (product) => {
+  //Gestion des détails du produit (useCallback pour l'optimisation)
+  const openProductDetails = useCallback((product) => {
     setSelectedProduct(product);
     setIsProductDetailsOpen(true);
-  };
+  }, []);
 
-  const closeProductDetails = () => {
+  const closeProductDetails = useCallback(() => {
     setIsProductDetailsOpen(false);
     setSelectedProduct(null);
-  };
+  }, []);
 
-  // Composant de tri et filtres
-  const SortAndFilter = () => (
-    <div className="flex flex-wrap items-center gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
+  //Composant interne pour les contrôles de tri et de filtre
+  const SortAndFilterControls = () => (
+    <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-gray-700">Trier par :</span>
         <select
@@ -151,9 +150,9 @@ const Products = ({
           max="50000"
           value={priceRange[1]}
           onChange={(e) =>
-            setPriceRange([priceRange[0], parseInt(e.target.value)])
+            setPriceRange([priceRange[0], parseInt(e.target.value, 10)])
           }
-          className="w-24"
+          className="w-24 accent-green-600"
         />
         <span className="text-sm text-gray-600">{priceRange[1]} FCFA</span>
       </div>
@@ -167,6 +166,7 @@ const Products = ({
               : "text-gray-400 hover:text-gray-600"
           }`}
           title="Vue grille"
+          aria-label="Afficher en grille"
         >
           <Grid size={20} />
         </button>
@@ -178,6 +178,7 @@ const Products = ({
               : "text-gray-400 hover:text-gray-600"
           }`}
           title="Vue liste"
+          aria-label="Afficher en liste"
         >
           <List size={20} />
         </button>
@@ -185,19 +186,19 @@ const Products = ({
     </div>
   );
 
-  // Composant de chargement
+  //Composant de squelette de chargement
   const LoadingGrid = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {[...Array(8)].map((_, index) => (
         <div
           key={index}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse"
         >
-          <div className="aspect-square bg-gray-200 animate-pulse"></div>
+          <div className="aspect-square bg-gray-200"></div>
           <div className="p-4 space-y-3">
-            <div className="h-4 bg-gray-200 animate-pulse rounded"></div>
-            <div className="h-4 bg-gray-200 animate-pulse rounded w-2/3"></div>
-            <div className="h-6 bg-gray-200 animate-pulse rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/2"></div>
           </div>
         </div>
       ))}
@@ -206,11 +207,13 @@ const Products = ({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header de la page */}
+      {/* En-tête de la page Products (pas de Navbar globale ici) */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4 m-auto">
+            <div className="flex items-center gap-4 mx-auto">
+              {" "}
+              {/* Contenu centré */}
               <h1 className="text-2xl font-bold text-gray-900">
                 🛒 SuperMarché
               </h1>
@@ -224,15 +227,17 @@ const Products = ({
               </span>
             </div>
 
-            {/* Bouton pour réinitialiser les filtres */}
+            {/* Bouton Réinitialiser les filtres */}
             {(searchTerm ||
               selectedCategory !== "all" ||
               priceRange[1] < 50000) && (
               <button
                 onClick={() => {
-                  if (onSearchChange) onSearchChange("");
+                  if (onSearchChange) onSearchChange(""); // Réinitialise le terme de recherche global via la prop
                   setSelectedCategory("all");
                   setPriceRange([0, 50000]);
+                  setSortBy("name"); // Réinitialise aussi l'ordre de tri
+                  setSortOrder("asc");
                 }}
                 className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
               >
@@ -243,24 +248,24 @@ const Products = ({
         </div>
       </header>
 
-      {/* Contenu principal */}
+      {/* Zone de contenu principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filtres de catégories */}
+        {/* Composant de filtre par catégorie */}
         <CategoryFilter
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           searchTerm={searchTerm}
         />
 
-        {/* Tri et filtres */}
-        <SortAndFilter />
+        {/* Composant de tri et filtres additionnels */}
+        <SortAndFilterControls />
 
-        {/* Grille de produits */}
+        {/* Affichage de la grille/liste des produits */}
         <div id="products-results">
           {isLoading ? (
-            <LoadingGrid />
+            <LoadingGrid /> // Afficher le squelette de chargement
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 bg-white rounded-lg shadow-md mt-6">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Aucun produit trouvé
@@ -272,9 +277,11 @@ const Products = ({
               </p>
               <button
                 onClick={() => {
-                  if (onSearchChange) onSearchChange("");
+                  if (onSearchChange) onSearchChange(""); // Réinitialise le terme de recherche global
                   setSelectedCategory("all");
                   setPriceRange([0, 50000]);
+                  setSortBy("name"); // Réinitialise aussi l'ordre de tri
+                  setSortOrder("asc");
                 }}
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
@@ -282,16 +289,18 @@ const Products = ({
               </button>
             </div>
           ) : (
+            // Afficher les produits en mode grille ou liste
             <div
               className={`${
                 viewMode === "grid"
                   ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-                  : "space-y-4"
+                  : "space-y-4" // Pour la vue liste, les éléments s'empilent verticalement
               }`}
             >
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
+                  className="cursor-pointer"
                   onClick={() => openProductDetails(product)}
                 >
                   <ProductCard
@@ -308,7 +317,7 @@ const Products = ({
         </div>
       </main>
 
-      {/* Modales */}
+      {/* Modale des détails du produit */}
       <ProductDetails
         product={selectedProduct}
         isOpen={isProductDetailsOpen}

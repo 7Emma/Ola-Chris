@@ -6,13 +6,34 @@ import ProductsDetails from "../components/ProductsDetails";
 import Contact from "../pages/Contact";
 import Offer from "../pages/Offer";
 
-function AppContext({ onAddToCart }) {
+
+function AppContext({
+  searchTerm,
+  onAddToCart,
+  onUpdateCartQuantity,
+  cartItems,
+  onSearchChange,
+}) {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
-      <Route path="/products" element={<Products onAddToCart={onAddToCart} />} />
-      <Route path="/details" element={<ProductsDetails onAddToCart={onAddToCart} />} />
+      <Route
+        path="/products"
+        element={
+          <Products
+            searchTerm={searchTerm}
+            onSearchChange={onSearchChange}
+            cartItems={cartItems}
+            onAddToCart={onAddToCart}
+            onUpdateCartQuantity={onUpdateCartQuantity}
+          />
+        }
+      />
+      <Route
+        path="/details"
+        element={<ProductsDetails onAddToCart={onAddToCart} />}
+      />
       <Route path="/contact" element={<Contact />} />
       <Route path="/offer" element={<Offer />} />
     </Routes>
