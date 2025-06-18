@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  Search,
-  Filter,
   Grid,
   List,
-  ShoppingCart,
-  SlidersHorizontal,
 } from "lucide-react";
 // Supprimez cette ligne pour éviter la double navbar
 // import Navbar from '../components/Navbar';
@@ -42,7 +38,7 @@ const Products = ({
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [priceRange, setPriceRange] = useState([0, 100]);
+  const [priceRange, setPriceRange] = useState([0, 50000]);
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -56,7 +52,7 @@ const Products = ({
     }, 500);
   }, []);
 
-  // Filtrage et recherche - CORRIGÉ
+  // Filtrage et recherche - CORRIGÉ POUR SLUG
   useEffect(() => {
     let result = [...products]; // Copie du tableau
 
@@ -73,10 +69,10 @@ const Products = ({
       );
     }
 
-    // Filtrage par catégorie
+    // CORRECTION: Filtrage par catégorie - comparer avec product.category et le slug de la catégorie
     if (selectedCategory !== "all") {
       result = result.filter(
-        (product) => product.category === selectedCategory
+        (product) => product.category === selectedCategory // product.category doit correspondre au slug
       );
     }
 
@@ -152,14 +148,14 @@ const Products = ({
         <input
           type="range"
           min="0"
-          max="100"
+          max="50000"
           value={priceRange[1]}
           onChange={(e) =>
             setPriceRange([priceRange[0], parseInt(e.target.value)])
           }
           className="w-24"
         />
-        <span className="text-sm text-gray-600">{priceRange[1]}€</span>
+        <span className="text-sm text-gray-600">{priceRange[1]} FCFA</span>
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
@@ -214,7 +210,7 @@ const Products = ({
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 m-auto">
               <h1 className="text-2xl font-bold text-gray-900">
                 🛒 SuperMarché
               </h1>
@@ -231,12 +227,12 @@ const Products = ({
             {/* Bouton pour réinitialiser les filtres */}
             {(searchTerm ||
               selectedCategory !== "all" ||
-              priceRange[1] < 100) && (
+              priceRange[1] < 50000) && (
               <button
                 onClick={() => {
                   if (onSearchChange) onSearchChange("");
                   setSelectedCategory("all");
-                  setPriceRange([0, 100]);
+                  setPriceRange([0, 50000]);
                 }}
                 className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
               >
@@ -278,7 +274,7 @@ const Products = ({
                 onClick={() => {
                   if (onSearchChange) onSearchChange("");
                   setSelectedCategory("all");
-                  setPriceRange([0, 100]);
+                  setPriceRange([0, 50000]);
                 }}
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >

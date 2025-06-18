@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import photoAbout from '../assets/photo-about.jpg'
+import photoAbout from '../assets/bg/photo-about.jpg'
 import {
   Target,
   Eye,

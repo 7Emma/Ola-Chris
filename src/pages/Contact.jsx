@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import photo from '../assets/contact.jpg'
+import photo from '../assets/bg/contact.jpg'
 import {
   MapPin,
   Phone,

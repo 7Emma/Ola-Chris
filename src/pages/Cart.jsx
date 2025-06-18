@@ -127,7 +127,7 @@ const Cart = ({
                       {item.name}
                     </h4>
                     <p className="text-sm text-gray-500 mb-2">
-                      {item.price.toFixed(2)} € / unité
+                      {item.price.toFixed(2)} FCFA / unité
                     </p>
 
                     {/* Quantity Controls */}
@@ -243,7 +243,7 @@ const Cart = ({
 
               {subtotal < 50 && (
                 <p className="text-xs text-gray-500">
-                  Livraison gratuite dès 50€ d'achat
+                  Livraison gratuite dès 50000 FCFA d'achat
                 </p>
               )}
 
@@ -256,7 +256,7 @@ const Cart = ({
 
               <div className="flex justify-between font-semibold text-lg border-t pt-2">
                 <span>Total</span>
-                <span>{total.toFixed(2)} €</span>
+                <span>{total.toFixed(2)} FCFA</span>
               </div>
             </div>
 
