@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Target,
   Eye,
@@ -196,7 +197,7 @@ function About() {
         <div className="relative z-10 text-center max-w-4xl px-6">
           <div className="backdrop-blur-sm bg-white/10 p-12 rounded-3xl shadow-2xl border border-white/20">
             <h1 className="text-5xl sm:text-7xl font-bold text-white mb-8 drop-shadow-lg">
-              OlaChris Market
+              Ola-Chris Market
             </h1>
             <p className="text-xl sm:text-2xl text-blue-200 mb-6 font-medium">
               Votre Supermarché de Confiance au Bénin
@@ -641,10 +642,10 @@ function About() {
               <MapPin className="inline-block mr-2 h-5 w-5" />
               Nos Magasins
             </button>
-            <button className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30">
+            <Link to="/contact" className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30">
               <Phone className="inline-block mr-2 h-5 w-5" />
               Nous Contacter
-            </button>
+            </Link>
             <button className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30">
               <Mail className="inline-block mr-2 h-5 w-5" />
               Newsletter

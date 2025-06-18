@@ -49,6 +49,12 @@ function Navbar() {
               About
             </Link>
             <Link
+                to="/contact"
+                className="block text-blue-700 hover:text-green-600 font-medium py-2"
+              >
+                Contact
+              </Link>
+            <Link
               to="/categories"
               className="text-blue-700 hover:text-green-600 font-medium transition-colors hover:underline"
             >
@@ -111,17 +117,24 @@ function Navbar() {
                 Accueil
               </Link>
               <Link
-                to="/categories"
-                className="block text-blue-700 hover:text-green-600 font-medium py-2"
-              >
-                Catégories
-              </Link>
-              <Link
                 to="/offer"
                 className="block text-blue-700 hover:text-green-600 font-medium py-2"
               >
                 Offres
               </Link>
+              <Link
+                to="/contact"
+                className="block text-blue-700 hover:text-green-600 font-medium py-2"
+              >
+                Contact
+              </Link>
+              <Link
+                to="/categories"
+                className="block text-blue-700 hover:text-green-600 font-medium py-2"
+              >
+                Catégories
+              </Link>
+              
             </div>
 
             {/* Boutons - Mobile */}

@@ -137,7 +137,7 @@ function Footer() {
               <p className="text-blue-100 text-sm mb-3 text-center">
                 Restez informé de nos dernières offres
               </p>
-              <div className="flex">
+              <div className="flex py-4">
                 <input
                   type="email"
                   name="newsletter"
