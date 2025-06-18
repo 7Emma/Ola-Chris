@@ -1,220 +1,442 @@
+// products.js - Données des produits du supermarché
+
 export const products = [
-  // Vêtements
+  // Fruits & Légumes (categoryId: 1)
   {
     id: 1,
-    name: "T-shirt Premium Coton",
-    description: "T-shirt en coton bio de haute qualité, coupe moderne et confortable. Parfait pour un style décontracté.",
-    price: 29.99,
-    originalPrice: 39.99,
-    image: "https://via.placeholder.com/400x400/3B82F6/FFFFFF?text=T-shirt",
-    category: "clothing",
-    inStock: true,
-    featured: true,
-    colors: ["Blanc", "Noir", "Bleu", "Rouge"],
-    sizes: ["S", "M", "L", "XL"],
+    name: "Bananes bio",
+    categoryId: 1,
+    price: 2.49,
+    originalPrice: 2.99,
+    unit: "kg",
+    quantity: 1,
+    stock: 25,
+    image: "/images/bananes.jpg",
+    description: "Bananes biologiques du Costa Rica, riches en potassium",
+    brand: "Bio Nature",
+    origin: "Costa Rica",
     rating: 4.5,
-    reviews: 128
+    reviewCount: 128,
+    discount: 15,
+    nutritionalInfo: {
+      calories: 89,
+      carbs: 23,
+      protein: 1.1,
+      fat: 0.3,
+      fiber: 2.6
+    },
+    features: ["Bio", "Commerce équitable", "Riche en potassium"]
   },
   {
     id: 2,
-    name: "Robe d'été Florale",
-    description: "Robe légère et élégante avec motifs floraux. Idéale pour les journées ensoleillées.",
-    price: 59.99,
-    originalPrice: 79.99,
-    image: "https://via.placeholder.com/400x400/EC4899/FFFFFF?text=Robe",
-    category: "clothing",
-    inStock: true,
-    featured: false,
-    colors: ["Floral Bleu", "Floral Rose", "Floral Jaune"],
-    sizes: ["S", "M", "L", "XL"],
-    rating: 4.7,
-    reviews: 89
+    name: "Tomates cerises",
+    categoryId: 1,
+    price: 3.99,
+    unit: "barquette 250g",
+    quantity: 1,
+    stock: 15,
+    image: "/images/tomates-cerises.jpg",
+    description: "Tomates cerises sucrées, parfaites pour les salades",
+    brand: "Jardin Frais",
+    origin: "France",
+    rating: 4.3,
+    reviewCount: 89,
+    nutritionalInfo: {
+      calories: 18,
+      carbs: 3.9,
+      protein: 0.9,
+      fat: 0.2,
+      fiber: 1.2
+    },
+    features: ["Origine France", "Goût sucré", "Sans pesticides"]
   },
   {
     id: 3,
-    name: "Jean Slim Fit",
-    description: "Jean coupe slim en denim stretch pour un confort optimal. Style intemporel.",
-    price: 79.99,
-    originalPrice: 99.99,
-    image: "https://via.placeholder.com/400x400/1F2937/FFFFFF?text=Jean",
-    category: "clothing",
-    inStock: true,
-    featured: true,
-    colors: ["Bleu Foncé", "Noir", "Bleu Clair"],
-    sizes: ["28", "30", "32", "34", "36"],
-    rating: 4.3,
-    reviews: 156
+    name: "Pommes Gala",
+    categoryId: 1,
+    price: 2.99,
+    unit: "kg",
+    quantity: 1,
+    stock: 30,
+    image: "/images/pommes-gala.jpg",
+    description: "Pommes Gala croquantes et sucrées",
+    brand: "Vergers du Sud",
+    origin: "France",
+    rating: 4.4,
+    reviewCount: 156,
+    features: ["Croquantes", "Sucrées", "Origine France"]
   },
 
-  // Accessoires
+  // Boucherie & Charcuterie (categoryId: 2)
   {
     id: 4,
-    name: "Montre Connectée Sport",
-    description: "Montre intelligente avec suivi d'activité, GPS et notifications. Étanche jusqu'à 50m.",
-    price: 199.99,
-    originalPrice: 249.99,
-    image: "https://via.placeholder.com/400x400/10B981/FFFFFF?text=Montre",
-    category: "accessories",
-    inStock: true,
-    featured: true,
-    colors: ["Noir", "Blanc", "Bleu"],
-    sizes: ["Unique"],
+    name: "Escalope de porc",
+    categoryId: 2,
+    price: 8.99,
+    unit: "kg",
+    quantity: 1,
+    stock: 12,
+    image: "/images/escalope-porc.jpg",
+    description: "Escalopes de porc tendres, idéales pour la poêle",
+    brand: "Boucherie Française",
+    origin: "France",
     rating: 4.6,
-    reviews: 203
+    reviewCount: 73,
+    nutritionalInfo: {
+      calories: 242,
+      carbs: 0,
+      protein: 27,
+      fat: 14,
+      fiber: 0
+    },
+    features: ["Viande française", "Tendre", "Élevage traditionnel"]
   },
   {
     id: 5,
-    name: "Lunettes de Soleil Aviateur",
-    description: "Lunettes de soleil style aviateur avec verres polarisés et protection UV400.",
-    price: 89.99,
-    originalPrice: 119.99,
-    image: "https://via.placeholder.com/400x400/F59E0B/FFFFFF?text=Lunettes",
-    category: "accessories",
-    inStock: true,
-    featured: false,
-    colors: ["Or", "Argent", "Noir"],
-    sizes: ["Unique"],
-    rating: 4.4,
-    reviews: 67
+    name: "Jambon blanc",
+    categoryId: 2,
+    price: 15.90,
+    unit: "kg",
+    quantity: 1,
+    stock: 8,
+    image: "/images/jambon-blanc.jpg",
+    description: "Jambon blanc supérieur, tranché fin",
+    brand: "Charcuterie Artisanale",
+    origin: "France",
+    rating: 4.7,
+    reviewCount: 94,
+    features: ["Artisanal", "Sans nitrites", "Goût authentique"]
   },
+
+  // Poissonnerie (categoryId: 3)
   {
     id: 6,
-    name: "Écharpe en Cachemire",
-    description: "Écharpe douce et chaude en cachemire authentique. Accessoire indispensable pour l'hiver.",
-    price: 149.99,
-    originalPrice: 199.99,
-    image: "https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Écharpe",
-    category: "accessories",
-    inStock: false,
-    featured: false,
-    colors: ["Beige", "Gris", "Noir", "Rouge"],
-    sizes: ["Unique"],
+    name: "Saumon atlantique",
+    categoryId: 3,
+    price: 22.90,
+    unit: "kg",
+    quantity: 1,
+    stock: 6,
+    image: "/images/saumon-atlantique.jpg",
+    description: "Saumon atlantique frais, riche en oméga-3",
+    brand: "Pêche Fraîche",
+    origin: "Norvège",
     rating: 4.8,
-    reviews: 45
+    reviewCount: 67,
+    nutritionalInfo: {
+      calories: 208,
+      carbs: 0,
+      protein: 20,
+      fat: 13,
+      fiber: 0
+    },
+    features: ["Riche en oméga-3", "Pêche durable", "Fraîcheur garantie"]
   },
-
-  // Chaussures
   {
     id: 7,
-    name: "Baskets Running Pro",
-    description: "Chaussures de course avec technologie d'amortissement avancée et semelle respirante.",
-    price: 129.99,
-    originalPrice: 159.99,
-    image: "https://via.placeholder.com/400x400/EF4444/FFFFFF?text=Baskets",
-    category: "shoes",
-    inStock: true,
-    featured: true,
-    colors: ["Blanc/Rouge", "Noir/Blanc", "Bleu/Gris"],
-    sizes: ["38", "39", "40", "41", "42", "43", "44"],
+    name: "Crevettes roses",
+    categoryId: 3,
+    price: 18.50,
+    unit: "kg",
+    quantity: 1,
+    stock: 10,
+    image: "/images/crevettes-roses.jpg",
+    description: "Crevettes roses cuites, prêtes à consommer",
+    brand: "Océan Bleu",
+    origin: "Madagascar",
     rating: 4.5,
-    reviews: 234
+    reviewCount: 45,
+    features: ["Cuites", "Prêtes à consommer", "Pêche responsable"]
   },
+
+  // Produits Laitiers (categoryId: 4)
   {
     id: 8,
-    name: "Bottes en Cuir Classiques",
-    description: "Bottes élégantes en cuir véritable pour un look sophistiqué en toute occasion.",
-    price: 189.99,
-    originalPrice: 229.99,
-    image: "https://via.placeholder.com/400x400/92400E/FFFFFF?text=Bottes",
-    category: "shoes",
-    inStock: true,
-    featured: false,
-    colors: ["Marron", "Noir"],
-    sizes: ["38", "39", "40", "41", "42", "43"],
-    rating: 4.6,
-    reviews: 98
+    name: "Lait demi-écrémé",
+    categoryId: 4,
+    price: 1.25,
+    unit: "litre",
+    quantity: 1,
+    stock: 50,
+    image: "/images/lait-demi-ecreme.jpg",
+    description: "Lait demi-écrémé UHT, source de calcium",
+    brand: "Lactel",
+    origin: "France",
+    rating: 4.2,
+    reviewCount: 234,
+    nutritionalInfo: {
+      calories: 46,
+      carbs: 4.8,
+      protein: 3.2,
+      fat: 1.6,
+      fiber: 0
+    },
+    features: ["Source de calcium", "UHT", "Origine France"]
   },
-
-  // Bijoux
   {
     id: 9,
-    name: "Collier Pendentif Or",
-    description: "Collier délicat avec pendentif en or 18 carats et pierre précieuse naturelle.",
-    price: 299.99,
-    originalPrice: 399.99,
-    image: "https://via.placeholder.com/400x400/F59E0B/FFFFFF?text=Collier",
-    category: "jewelry",
-    inStock: true,
-    featured: true,
-    colors: ["Or", "Or Rose"],
-    sizes: ["45cm", "50cm"],
-    rating: 4.9,
-    reviews: 76
-  },
-  {
-    id: 10,
-    name: "Boucles d'Oreilles Diamant",
-    description: "Boucles d'oreilles élégantes serties de diamants certifiés. Parfaites pour les occasions spéciales.",
-    price: 449.99,
-    originalPrice: 599.99,
-    image: "https://via.placeholder.com/400x400/E5E7EB/000000?text=Boucles",
-    category: "jewelry",
-    inStock: true,
-    featured: false,
-    colors: ["Argent", "Or Blanc"],
-    sizes: ["Unique"],
-    rating: 4.8,
-    reviews: 52
+    name: "Camembert de Normandie",
+    categoryId: 4,
+    price: 3.49,
+    unit: "pièce 250g",
+    quantity: 1,
+    stock: 18,
+    image: "/images/camembert-normandie.jpg",
+    description: "Camembert de Normandie AOP au lait cru",
+    brand: "Président",
+    origin: "Normandie",
+    rating: 4.6,
+    reviewCount: 112,
+    features: ["AOP", "Lait cru", "Affinage traditionnel"]
   },
 
-  // Sacs
+  // Boulangerie & Pâtisserie (categoryId: 5)
   {
-    id: 11,
-    name: "Sac à Main Cuir Premium",
-    description: "Sac à main en cuir italien de première qualité avec finitions soignées et compartiments pratiques.",
-    price: 249.99,
-    originalPrice: 319.99,
-    image: "https://via.placeholder.com/400x400/DC2626/FFFFFF?text=Sac",
-    category: "bags",
-    inStock: true,
-    featured: true,
-    colors: ["Rouge", "Noir", "Marron", "Beige"],
-    sizes: ["Medium", "Large"],
+    id: 10,
+    name: "Baguette tradition",
+    categoryId: 5,
+    price: 1.20,
+    unit: "pièce",
+    quantity: 1,
+    stock: 40,
+    image: "/images/baguette-tradition.jpg",
+    description: "Baguette tradition française, croustillante",
+    brand: "Boulangerie Artisanale",
+    origin: "France",
     rating: 4.7,
-    reviews: 142
+    reviewCount: 89,
+    features: ["Tradition française", "Croustillante", "Artisanale"]
   },
   {
+    id: 11,
+    name: "Croissants pur beurre",
+    categoryId: 5,
+    price: 4.50,
+    unit: "lot de 6",
+    quantity: 1,
+    stock: 20,
+    image: "/images/croissants-pur-beurre.jpg",
+    description: "Croissants pur beurre, feuilletage artisanal",
+    brand: "Pâtisserie Française",
+    origin: "France",
+    rating: 4.8,
+    reviewCount: 156,
+    features: ["Pur beurre", "Feuilletage artisanal", "Viennoiserie française"]
+  },
+
+  // Épicerie Salée (categoryId: 6)
+  {
     id: 12,
-    name: "Sac de Voyage Résistant",
-    description: "Sac de voyage spacieux et résistant avec roulettes et poignée télescopique.",
-    price: 179.99,
-    originalPrice: 219.99,
-    image: "https://via.placeholder.com/400x400/374151/FFFFFF?text=Voyage",
-    category: "bags",
-    inStock: true,
-    featured: false,
-    colors: ["Noir", "Gris", "Bleu Marine"],
-    sizes: ["55cm", "65cm", "75cm"],
+    name: "Pâtes spaghetti",
+    categoryId: 6,
+    price: 1.89,
+    unit: "paquet 500g",
+    quantity: 1,
+    stock: 60,
+    image: "/images/pates-spaghetti.jpg",
+    description: "Spaghetti n°5 de qualité supérieure",
+    brand: "Barilla",
+    origin: "Italie",
     rating: 4.4,
-    reviews: 87
+    reviewCount: 203,
+    nutritionalInfo: {
+      calories: 371,
+      carbs: 74,
+      protein: 13,
+      fat: 1.5,
+      fiber: 3
+    },
+    features: ["Qualité supérieure", "Cuisson parfaite", "Tradition italienne"]
+  },
+  {
+    id: 13,
+    name: "Huile d'olive extra vierge",
+    categoryId: 6,
+    price: 6.99,
+    unit: "bouteille 500ml",
+    quantity: 1,
+    stock: 25,
+    image: "/images/huile-olive-extra-vierge.jpg",
+    description: "Huile d'olive extra vierge première pression à froid",
+    brand: "Puget",
+    origin: "Espagne",
+    rating: 4.5,
+    reviewCount: 178,
+    features: ["Extra vierge", "Première pression à froid", "Goût fruité"]
+  },
+
+  // Épicerie Sucrée (categoryId: 7)
+  {
+    id: 14,
+    name: "Chocolat noir 70%",
+    categoryId: 7,
+    price: 2.99,
+    unit: "tablette 100g",
+    quantity: 1,
+    stock: 35,
+    image: "/images/chocolat-noir-70.jpg",
+    description: "Chocolat noir intense 70% de cacao",
+    brand: "Lindt",
+    origin: "Suisse",
+    rating: 4.6,
+    reviewCount: 142,
+    nutritionalInfo: {
+      calories: 598,
+      carbs: 24,
+      protein: 12,
+      fat: 50,
+      fiber: 16
+    },
+    features: ["70% cacao", "Intense", "Antioxydants"]
+  },
+  {
+    id: 15,
+    name: "Miel d'acacia",
+    categoryId: 7,
+    price: 4.99,
+    unit: "pot 250g",
+    quantity: 1,
+    stock: 22,
+    image: "/images/miel-acacia.jpg",
+    description: "Miel d'acacia liquide et doux",
+    brand: "Lune de Miel",
+    origin: "France",
+    rating: 4.7,
+    reviewCount: 98,
+    features: ["Liquide", "Goût doux", "Origine France"]
+  },
+
+  // Boissons (categoryId: 8)
+  {
+    id: 16,
+    name: "Eau minérale naturelle",
+    categoryId: 8,
+    price: 2.49,
+    unit: "pack 6x1.5L",
+    quantity: 1,
+    stock: 80,
+    image: "/images/eau-minerale-naturelle.jpg",
+    description: "Eau minérale naturelle des Alpes",
+    brand: "Évian",
+    origin: "France",
+    rating: 4.3,
+    reviewCount: 267,
+    features: ["Minérale naturelle", "Source des Alpes", "Équilibrée"]
+  },
+  {
+    id: 17,
+    name: "Jus d'orange pressé",
+    categoryId: 8,
+    price: 3.29,
+    unit: "bouteille 1L",
+    quantity: 1,
+    stock: 28,
+    image: "/images/jus-orange-presse.jpg",
+    description: "Jus d'orange 100% pur jus sans sucre ajouté",
+    brand: "Tropicana",
+    origin: "Espagne",
+    rating: 4.4,
+    reviewCount: 134,
+    features: ["100% pur jus", "Sans sucre ajouté", "Vitamine C"]
+  },
+
+  // Surgelés (categoryId: 9)
+  {
+    id: 18,
+    name: "Légumes pour wok",
+    categoryId: 9,
+    price: 2.99,
+    unit: "sachet 750g",
+    quantity: 1,
+    stock: 45,
+    image: "/images/legumes-wok-surgeles.jpg",
+    description: "Mélange de légumes asiatiques surgelés",
+    brand: "Picard",
+    origin: "Asie",
+    rating: 4.2,
+    reviewCount: 76,
+    features: ["Prêt en 5 minutes", "Mélange asiatique", "Sans conservateurs"]
+  },
+  {
+    id: 19,
+    name: "Glace vanille",
+    categoryId: 9,
+    price: 4.99,
+    unit: "bac 1L",
+    quantity: 1,
+    stock: 20,
+    image: "/images/glace-vanille.jpg",
+    description: "Glace à la vanille de Madagascar artisanale",
+    brand: "Häagen-Dazs",
+    origin: "France",
+    rating: 4.8,
+    reviewCount: 189,
+    features: ["Vanille de Madagascar", "Artisanale", "Texture crémeuse"]
+  },
+
+  // Hygiène & Beauté (categoryId: 10)
+  {
+    id: 20,
+    name: "Dentifrice blancheur",
+    categoryId: 10,
+    price: 3.49,
+    unit: "tube 75ml",
+    quantity: 1,
+    stock: 40,
+    image: "/images/dentifrice-blancheur.jpg",
+    description: "Dentifrice blancheur protection complète",
+    brand: "Signal",
+    origin: "France",
+    rating: 4.1,
+    reviewCount: 156,
+    features: ["Blancheur", "Protection complète", "Fluor"]
+  },
+  {
+    id: 21,
+    name: "Gel douche hydratant",
+    categoryId: 10,
+    price: 2.99,
+    unit: "flacon 250ml",
+    quantity: 1,
+    stock: 55,
+    image: "/images/gel-douche-hydratant.jpg",
+    description: "Gel douche hydratant à l'huile d'argan",
+    brand: "Dove",
+    origin: "France",
+    rating: 4.3,
+    reviewCount: 234,
+    features: ["Hydratant", "Huile d'argan", "Peau douce"]
   }
 ];
 
-// Fonction pour obtenir les produits par catégorie
-export const getProductsByCategory = (category) => {
-  if (category === "all") {
-    return products;
-  }
-  return products.filter(product => product.category === category);
-};
-
-// Fonction pour obtenir les produits en vedette
-export const getFeaturedProducts = () => {
-  return products.filter(product => product.featured);
-};
-
-// Fonction pour obtenir un produit par ID
+// Fonctions utilitaires pour les produits
 export const getProductById = (id) => {
-  return products.find(product => product.id === parseInt(id));
+  return products.find(product => product.id === id);
 };
 
-// Fonction pour rechercher des produits
+export const getProductsByCategory = (categoryId) => {
+  return products.filter(product => product.categoryId === categoryId);
+};
+
+export const getAllProducts = () => {
+  return products;
+};
+
 export const searchProducts = (query) => {
   const searchTerm = query.toLowerCase();
   return products.filter(product => 
     product.name.toLowerCase().includes(searchTerm) ||
-    product.description.toLowerCase().includes(searchTerm)
+    product.description.toLowerCase().includes(searchTerm) ||
+    product.brand.toLowerCase().includes(searchTerm)
   );
+};
+
+export const getProductsWithDiscount = () => {
+  return products.filter(product => product.discount > 0);
+};
+
+export const getFeaturedProducts = () => {
+  return products.filter(product => product.rating >= 4.5);
 };
 
 export default products;

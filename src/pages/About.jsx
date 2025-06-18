@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import photoAbout from '../assets/photo-about.jpg'
 import {
   Target,
   Eye,
@@ -33,7 +34,6 @@ import {
 
 function About() {
   const [activeTab, setActiveTab] = useState("overview");
-  const backgroundImageUrl = "https://urlz.fr/uC77";
 
   const stats = [
     {
@@ -190,7 +190,7 @@ function About() {
       {/* Section Bannière Hero */}
       <section
         className="relative h-[800px] bg-cover bg-center flex items-center justify-center overflow-hidden"
-        style={{ backgroundImage: `url('${backgroundImageUrl}')` }}
+        style={{ backgroundImage: `url('${photoAbout}')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30"></div>
 

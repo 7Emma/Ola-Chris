@@ -1,33 +1,51 @@
-import React, { useState } from 'react';
-import { ShoppingCart, Plus, Minus, X, Trash2, ShoppingBag, CreditCard } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  X,
+  Trash2,
+  ShoppingBag,
+  CreditCard,
+} from "lucide-react";
 
-const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem, onClearCart, isOpen, onClose }) => {
-  const [promoCode, setPromoCode] = useState('');
+const Cart = ({
+  cartItems,
+  onUpdateQuantity,
+  onRemoveItem,
+  onClearCart,
+  isOpen,
+  onClose,
+}) => {
+  const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Calculs du panier
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const deliveryFee = subtotal > 50 ? 0 : 4.99;
   const promoDiscount = appliedPromo ? subtotal * 0.1 : 0; // 10% de réduction
   const total = subtotal + deliveryFee - promoDiscount;
 
   const handlePromoCode = () => {
-    if (promoCode.toLowerCase() === 'welcome10') {
-      setAppliedPromo({ code: 'WELCOME10', discount: 0.1 });
+    if (promoCode.toLowerCase() === "welcome10") {
+      setAppliedPromo({ code: "WELCOME10", discount: 0.1 });
     } else {
-      alert('Code promo invalide');
+      alert("Code promo invalide");
     }
   };
 
   const handleIncrement = (productId) => {
-    const item = cartItems.find(item => item.id === productId);
+    const item = cartItems.find((item) => item.id === productId);
     if (item && item.quantity < item.stock) {
       onUpdateQuantity(productId, item.quantity + 1);
     }
   };
 
   const handleDecrement = (productId) => {
-    const item = cartItems.find(item => item.id === productId);
+    const item = cartItems.find((item) => item.id === productId);
     if (item && item.quantity > 1) {
       onUpdateQuantity(productId, item.quantity - 1);
     } else {
@@ -36,7 +54,7 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem, onClearCart, isOpen, 
   };
 
   const handleCheckout = () => {
-    alert('Redirection vers la page de paiement...');
+    alert("Redirection vers la page de paiement...");
   };
 
   if (!isOpen) return null;
@@ -44,11 +62,11 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem, onClearCart, isOpen, 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Cart Panel */}
       <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
         {/* Header */}
@@ -90,11 +108,14 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem, onClearCart, isOpen, 
             /* Cart Items */
             <div className="p-4 space-y-4">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex gap-4 bg-gray-50 rounded-lg p-4">
+                <div
+                  key={item.id}
+                  className="flex gap-4 bg-gray-50 rounded-lg p-4"
+                >
                   {/* Product Image */}
                   <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0">
                     <img
-                      src={item.image || '/api/placeholder/64/64'}
+                      src={item.image || "/api/placeholder/64/64"}
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />
@@ -126,8 +147,8 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem, onClearCart, isOpen, 
                           disabled={item.quantity >= item.stock}
                           className={`p-2 transition-colors ${
                             item.quantity >= item.stock
-                              ? 'text-gray-300 cursor-not-allowed'
-                              : 'text-gray-500 hover:text-green-500'
+                              ? "text-gray-300 cursor-not-allowed"
+                              : "text-gray-500 hover:text-green-500"
                           }`}
                         >
                           <Plus size={16} />
@@ -210,27 +231,29 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem, onClearCart, isOpen, 
                 <span>Sous-total</span>
                 <span>{subtotal.toFixed(2)} €</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span>Livraison</span>
-                <span className={deliveryFee === 0 ? 'text-green-600' : ''}>
-                  {deliveryFee === 0 ? 'Gratuite' : `${deliveryFee.toFixed(2)} €`}
+                <span className={deliveryFee === 0 ? "text-green-600" : ""}>
+                  {deliveryFee === 0
+                    ? "Gratuite"
+                    : `${deliveryFee.toFixed(2)} €`}
                 </span>
               </div>
-              
+
               {subtotal < 50 && (
                 <p className="text-xs text-gray-500">
                   Livraison gratuite dès 50€ d'achat
                 </p>
               )}
-              
+
               {appliedPromo && (
                 <div className="flex justify-between text-green-600">
                   <span>Réduction ({appliedPromo.code})</span>
                   <span>-{promoDiscount.toFixed(2)} €</span>
                 </div>
               )}
-              
+
               <div className="flex justify-between font-semibold text-lg border-t pt-2">
                 <span>Total</span>
                 <span>{total.toFixed(2)} €</span>

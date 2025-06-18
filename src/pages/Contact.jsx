@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import photo from '../assets/contact.jpg'
 import {
   MapPin,
   Phone,
@@ -178,14 +179,12 @@ function Contact() {
     );
   }
 
-  const backgroundImageUrl =
-    "https://urlz.fr/uC8P";
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
       <div
         className="relative h-[300px] bg-cover bg-center flex items-center justify-center overflow-hidden"
-        style={{ backgroundImage: `url('${backgroundImageUrl}')` }}
+        style={{ backgroundImage: `url('${photo}')` }}
       >
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-blue-400">

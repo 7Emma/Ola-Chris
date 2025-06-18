@@ -6,6 +6,7 @@ import equipe1 from "../assets/equipe/equipe1.avif"
 import equipe2 from "../assets/equipe/equipe2.jpg"
 import equipe3 from "../assets/equipe/equipe3.jpg"
 import equipe4 from "../assets/equipe/equipe4.jpg"
+import photoAcceuil from '../assets/home.jpg'
 
 import {
   Search,
@@ -257,7 +258,7 @@ function Home() {
       {/* Hero avec image de fond - CONSERVÉ */}
       <section
         className="relative h-[600px] bg-cover bg-center text-white flex items-center justify-center overflow-hidden"
-        style={{ backgroundImage: `url('${backgroundImageUrl}')` }}
+        style={{ backgroundImage: `url('${photoAcceuil}')` }}
       >
         {/* Overlay pour le carousel de texte */}
         <div className="absolute inset-0 bg-black/40"></div>
