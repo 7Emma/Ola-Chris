@@ -6,8 +6,7 @@ import {
   Menu,
   X,
   User,
-  LogOut,
-  LogIn,
+  LogIn, // LogOut n'est plus nécessaire ici
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/logo.svg";
@@ -26,7 +25,7 @@ function Navbar({
   const location = useLocation(); // Pour détecter la page actuelle
 
   // Utilisez les hooks des contextes
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth(); // 'logout' sera toujours appelé depuis le Profile
   const { items: cartItems, toggleCart, itemCount } = useCart();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -70,10 +69,11 @@ function Navbar({
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+  // La fonction handleLogout est supprimée d'ici car le bouton sera dans Profile
+  // const handleLogout = () => {
+  //   logout();
+  //   navigate("/");
+  // };
 
   // Fonction pour vérifier si un lien est actif
   const isActiveLink = (path) => {
@@ -82,10 +82,11 @@ function Navbar({
 
   // Classes pour les liens avec effets actifs
   const getLinkClasses = (path) => {
-    const baseClasses = "text-blue-700 hover:text-green-600 font-medium transition-all duration-200 relative";
+    const baseClasses =
+      "text-blue-700 hover:text-green-600 font-medium transition-all duration-200 relative";
     const activeClasses = "text-green-600 font-bold";
     const hoverClasses = "hover:underline hover:scale-105";
-    
+
     if (isActiveLink(path)) {
       return `${baseClasses} ${activeClasses}`;
     }
@@ -94,7 +95,8 @@ function Navbar({
 
   // Classes pour l'icône utilisateur avec background actif
   const getUserIconClasses = () => {
-    const baseClasses = "p-2 transition-all duration-300 rounded-full flex items-center";
+    const baseClasses =
+      "p-2 transition-all duration-300 rounded-full flex items-center";
     if (isActiveLink("/profile")) {
       return `${baseClasses} bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105`;
     }
@@ -136,46 +138,39 @@ function Navbar({
             )}
 
             <div className="hidden md:flex items-center space-x-4">
-              <Link
-                to="/"
-                className={getLinkClasses("/")}
-              >
+              <Link to="/" className={getLinkClasses("/")}>
                 Accueil
                 {isActiveLink("/") && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-green-500 transform scale-x-100 transition-transform duration-300"></span>
                 )}
               </Link>
-              
-              <Link
-                to="/about"
-                className={getLinkClasses("/about")}
-              >
-                À propos
-                {isActiveLink("/about") && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-green-500 transform scale-x-100 transition-transform duration-300"></span>
-                )}
-              </Link>
-              
-              <Link
-                to="/contact"
-                className={getLinkClasses("/contact")}
-              >
-                Contact
-                {isActiveLink("/contact") && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-green-500 transform scale-x-100 transition-transform duration-300"></span>
-                )}
-              </Link>
-              
-              <Link
-                to="/products"
-                className={getLinkClasses("/products")}
-              >
+
+              {/* Masquer "À propos" et "Contact" si non connecté */}
+              {isAuthenticated && (
+                <>
+                  <Link to="/about" className={getLinkClasses("/about")}>
+                    À propos
+                    {isActiveLink("/about") && (
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-green-500 transform scale-x-100 transition-transform duration-300"></span>
+                    )}
+                  </Link>
+
+                  <Link to="/contact" className={getLinkClasses("/contact")}>
+                    Contact
+                    {isActiveLink("/contact") && (
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-green-500 transform scale-x-100 transition-transform duration-300"></span>
+                    )}
+                  </Link>
+                </>
+              )}
+
+              <Link to="/products" className={getLinkClasses("/products")}>
                 Produits
                 {isActiveLink("/products") && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-green-500 transform scale-x-100 transition-transform duration-300"></span>
                 )}
               </Link>
-              
+
               <Link
                 to="/products"
                 className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-1.5 rounded-full font-semibold hover:from-green-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-200 shadow-lg"
@@ -199,35 +194,26 @@ function Navbar({
                 )}
               </button>
 
-              {/* Bouton Utilisateur / Connexion / Déconnexion */}
+              {/* Bouton Utilisateur / Connexion */}
               {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/profile"
-                    className={getUserIconClasses()}
-                    title={`Profil - ${user.name || user.email}`}
-                  >
-                    <User size={24} />
-                    {user.name && (
-                      <span className="ml-2 font-medium">
-                        {user.name.split(" ")[0]}
-                      </span>
-                    )}
-                  </Link>
-                  <button
-                    className="p-2 text-red-500 hover:text-red-700 transition-colors duration-200 rounded-full hover:bg-red-50"
-                    title="Déconnexion"
-                    onClick={handleLogout}
-                  >
-                    <LogOut size={24} />
-                  </button>
-                </>
+                <Link
+                  to="/profile"
+                  className={getUserIconClasses()}
+                  title={`Profil - ${user.name || user.email}`}
+                >
+                  <User size={24} />
+                  {user.firstName && ( // Utiliser user.firstName au lieu de user.name
+                    <span className="ml-2 font-medium">
+                      {user.firstName.split(" ")[0]}
+                    </span>
+                  )}
+                </Link>
               ) : (
                 <Link
                   to="/login"
                   className={`p-2 transition-all duration-300 rounded-full flex items-center ${
-                    isActiveLink("/login") 
-                      ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105" 
+                    isActiveLink("/login")
+                      ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105"
                       : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
                   }`}
                   title="Se connecter"
@@ -278,44 +264,49 @@ function Navbar({
                 <Link
                   to="/"
                   className={`block font-medium py-2 transition-all duration-200 px-3 rounded-lg ${
-                    isActiveLink("/") 
-                      ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500" 
+                    isActiveLink("/")
+                      ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500"
                       : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
                   }`}
                   onClick={toggleMenu}
                 >
                   Accueil
                 </Link>
-                
-                <Link
-                  to="/about"
-                  className={`block font-medium py-2 transition-all duration-200 px-3 rounded-lg ${
-                    isActiveLink("/about") 
-                      ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500" 
-                      : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
-                  }`}
-                  onClick={toggleMenu}
-                >
-                  À propos
-                </Link>
-                
-                <Link
-                  to="/contact"
-                  className={`block font-medium py-2 transition-all duration-200 px-3 rounded-lg ${
-                    isActiveLink("/contact") 
-                      ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500" 
-                      : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
-                  }`}
-                  onClick={toggleMenu}
-                >
-                  Contact
-                </Link>
-                
+
+                {/* Masquer "À propos" et "Contact" si non connecté pour le mobile */}
+                {isAuthenticated && (
+                  <>
+                    <Link
+                      to="/about"
+                      className={`block font-medium py-2 transition-all duration-200 px-3 rounded-lg ${
+                        isActiveLink("/about")
+                          ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500"
+                          : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
+                      }`}
+                      onClick={toggleMenu}
+                    >
+                      À propos
+                    </Link>
+
+                    <Link
+                      to="/contact"
+                      className={`block font-medium py-2 transition-all duration-200 px-3 rounded-lg ${
+                        isActiveLink("/contact")
+                          ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500"
+                          : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
+                      }`}
+                      onClick={toggleMenu}
+                    >
+                      Contact
+                    </Link>
+                  </>
+                )}
+
                 <Link
                   to="/products"
                   className={`block font-medium py-2 transition-all duration-200 px-3 rounded-lg ${
-                    isActiveLink("/products") 
-                      ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500" 
+                    isActiveLink("/products")
+                      ? "text-green-600 font-bold bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-green-500"
                       : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
                   }`}
                   onClick={toggleMenu}
@@ -353,36 +344,29 @@ function Navbar({
                   </button>
 
                   {isAuthenticated ? (
-                    <>
-                      <Link
-                        to="/profile"
-                        className={`p-2 transition-all duration-300 rounded-full ${
-                          isActiveLink("/profile") 
-                            ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105" 
-                            : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
-                        }`}
-                        onClick={toggleMenu}
-                        title={`Profil - ${user.name || user.email}`}
-                      >
-                        <User size={24} />
-                      </Link>
-                      <button
-                        className="p-2 text-red-500 hover:text-red-700 transition-colors duration-200 rounded-full hover:bg-red-50"
-                        onClick={() => {
-                          handleLogout();
-                          toggleMenu();
-                        }}
-                        title="Déconnexion"
-                      >
-                        <LogOut size={24} />
-                      </button>
-                    </>
+                    <Link
+                      to="/profile"
+                      className={`p-2 transition-all duration-300 rounded-full ${
+                        isActiveLink("/profile")
+                          ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105"
+                          : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
+                      }`}
+                      onClick={toggleMenu}
+                      title={`Profil - ${user.firstName || user.email}`}
+                    >
+                      <User size={24} />
+                      {user.firstName && (
+                        <span className="ml-2 font-medium">
+                          {user.firstName}
+                        </span>
+                      )}
+                    </Link>
                   ) : (
                     <Link
                       to="/login"
                       className={`p-2 transition-all duration-300 rounded-full ${
-                        isActiveLink("/login") 
-                          ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105" 
+                        isActiveLink("/login")
+                          ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105"
                           : "text-blue-700 hover:text-green-600 hover:bg-blue-50"
                       }`}
                       onClick={toggleMenu}
