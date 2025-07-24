@@ -346,7 +346,7 @@ function Navbar({
                   {isAuthenticated ? (
                     <Link
                       to="/profile"
-                      className={`p-2 transition-all duration-300 rounded-full bg-green-300 ${
+                      className={`p-2 transition-all duration-300 rounded-full bg-green-700 ${
                         isActiveLink("/profile")
                           ? "bg-gradient-to-r from-blue-100 to-green-100 text-green-600 shadow-md transform scale-105"
                           : "text-blue-700 hover:text-green-600 hover:bg-blue-50"

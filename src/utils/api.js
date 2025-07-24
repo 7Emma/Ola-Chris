@@ -16,6 +16,22 @@ const api = axios.create({
   },
 });
 
+// Ajouter automatiquement le token JWT à chaque requête si disponible
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token"); // vérifie le nom exact du token
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // --- Authentification ---
 
 export const registerUser = async (userData) => {
@@ -116,7 +132,6 @@ export const getProtectedResource = async () => {
  * @throws {Error} En cas d'échec de la récupération.
  */
 export const getUserProfile = async () => {
-  // <--- C'EST LA FONCTION MANQUANTE !
   try {
     const response = await api.get("/user/profile"); // Assurez-vous que cette route existe sur votre backend
     return response.data;
@@ -163,6 +178,8 @@ export const fetchRecentOrders = async () => {
 
 export const toggleFavoriteProduct = async (productId) => {
   try {
+    // Note: Votre backend devrait renvoyer l'état actuel (isFavorite) et la liste complète des favoris
+    // Par exemple: { isFavorite: true, favoriteProductIds: [1, 5, 10] }
     const response = await api.post(`/user/favorites/toggle/${productId}`);
     return response.data;
   } catch (error) {
@@ -178,7 +195,12 @@ export const toggleFavoriteProduct = async (productId) => {
 export const fetchFavoriteProductIds = async () => {
   try {
     const response = await api.get("/user/favorites");
-    return response.data;
+    // MODIFICATION ICI: Assurez-vous de renvoyer le tableau d'IDs directement.
+    // Votre backend devrait renvoyer soit un tableau d'IDs, soit un objet comme { favoriteIds: [...] }
+    // Si votre backend renvoie { favoriteIds: [...] }, utilisez `response.data.favoriteIds`
+    // Si votre backend renvoie directement un tableau [...], utilisez `response.data`
+    // Pour la flexibilité, nous allons vérifier les deux cas courants:
+    return response.data.favoriteIds || response.data || [];
   } catch (error) {
     console.error(
       "Erreur lors de la récupération des IDs de produits favoris:",
@@ -191,4 +213,3 @@ export const fetchFavoriteProductIds = async () => {
     );
   }
 };
-

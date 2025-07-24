@@ -1,4 +1,4 @@
-// context/AuthContext.jsx
+// src/context/AuthContext.jsx
 import React, {
   createContext,
   useContext,
@@ -11,8 +11,9 @@ import {
   registerUser,
   getUserProfile,
   updateUserProfile,
-} from "../utils/api"; // Supposant qu'ils existent
-import { fetchFavoriteProductIds, toggleFavoriteProduct } from "../utils/api"; // Importer les nouvelles fonctions
+  fetchFavoriteProductIds, // Importé depuis api.js
+  toggleFavoriteProduct, // Importé depuis api.js
+} from "../utils/api";
 
 const AuthContext = createContext();
 
@@ -21,29 +22,39 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
-  const [favoriteProductIds, setFavoriteProductIds] = useState([]); // NOUVEL ÉTAT
+  const [favoriteProductIds, setFavoriteProductIds] = useState([]); // État pour les IDs des favoris
 
   // Charger l'utilisateur depuis localStorage au montage du composant
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token"); // Supposant que vous stockez un jeton
-    if (storedUser && storedToken) {
+    const checkAuth = async () => {
+      setLoading(true);
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-        // Récupérer les IDs des produits favoris initiaux lorsque l'utilisateur est authentifié
-        fetchUserFavorites(); // Appeler la nouvelle fonction pour récupérer les favoris
+        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("token");
+
+        if (storedUser && storedToken) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setIsAuthenticated(true);
+          // Récupérer les IDs des produits favoris initiaux lorsque l'utilisateur est authentifié
+          await fetchUserFavorites(); // Appel de la fonction pour récupérer les favoris
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+          setFavoriteProductIds([]); // S'assurer que les favoris sont vides si non authentifié
+        }
       } catch (e) {
         console.error(
-          "Échec de l'analyse de l'utilisateur depuis localStorage",
+          "Échec de l'analyse de l'utilisateur depuis localStorage ou de la récupération des favoris",
           e
         );
         logout(); // Effacer les données invalides
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
-  }, []);
+    };
+    checkAuth();
+  }, []); // Dépendances vides pour s'exécuter une seule fois au montage
 
   const login = async (credentials) => {
     setLoading(true);
@@ -105,9 +116,8 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = useCallback(
     async (updatedUserData) => {
       try {
-        // Supposant que l'API updateUserProfile renvoie l'objet utilisateur mis à jour
-        // Nous n'avons pas besoin d'appeler l'API ici directement, SupermarketProfile l'appelle
         // Cette fonction est destinée à mettre à jour l'état de l'utilisateur du contexte
+        // L'appel API réel updateUserProfile est supposé être fait avant d'appeler cette fonction
         setUser((prevUser) => ({ ...prevUser, ...updatedUserData }));
         localStorage.setItem(
           "user",
@@ -129,14 +139,16 @@ export const AuthProvider = ({ children }) => {
     [user]
   ); // Dépend de 'user' pour s'assurer qu'il utilise le dernier état pour la mise à jour de localStorage
 
-  // NOUVEAU : Fonction pour récupérer les IDs des produits favoris
+  // Fonction pour récupérer les IDs des produits favoris
   const fetchUserFavorites = useCallback(async () => {
     if (!isAuthenticated) {
       setFavoriteProductIds([]); // Effacer si non authentifié
       return;
     }
     try {
-      const ids = await fetchFavoriteProductIds();
+      console.log("[AuthContext] Début de fetchUserFavorites...");
+      const ids = await fetchFavoriteProductIds(); // Appel à l'API
+      console.log("[AuthContext] IDs favoris récupérés:", ids);
       setFavoriteProductIds(ids);
     } catch (error) {
       console.error(
@@ -145,9 +157,9 @@ export const AuthProvider = ({ children }) => {
       );
       setFavoriteProductIds([]); // Effacer en cas d'erreur
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated]); // Dépend de isAuthenticated pour se déclencher si l'état change
 
-  // NOUVEAU : Fonction pour basculer le statut de favori d'un produit
+  // Fonction pour basculer le statut de favori d'un produit
   const handleToggleFavorite = useCallback(
     async (productId) => {
       if (!isAuthenticated) {
@@ -155,23 +167,39 @@ export const AuthProvider = ({ children }) => {
         return false; // Indique que l'opération n'a pas pu être effectuée
       }
       try {
+        console.log(`[AuthContext] Bascule du favori pour productId: ${productId}`);
         const { isFavorite, favoriteProductIds: updatedIds } =
-          await toggleFavoriteProduct(productId);
-        setFavoriteProductIds(updatedIds); // Mettre à jour l'état avec la nouvelle liste d'IDs
+          await toggleFavoriteProduct(productId); // Appel à l'API
+        
+        console.log(`[AuthContext] Réponse de toggleFavoriteProduct: isFavorite=${isFavorite}, updatedIds=`, updatedIds);
+
+        if (updatedIds) { // S'assurer que updatedIds est bien défini
+          setFavoriteProductIds(updatedIds); // Mettre à jour l'état avec la nouvelle liste d'IDs
+          console.log("[AuthContext] favoriteProductIds mis à jour avec:", updatedIds);
+        } else {
+          console.warn("[AuthContext] toggleFavoriteProduct n'a pas renvoyé 'favoriteProductIds'. L'état pourrait être incohérent.");
+          // Optionnel: Re-fetch complet des favoris si la réponse est incomplète
+          await fetchUserFavorites();
+        }
+        
         return isFavorite; // Retourne le nouveau statut
       } catch (error) {
         console.error("Échec du basculement des favoris :", error);
+        // Vous pouvez relancer l'erreur ou la gérer différemment si nécessaire
         throw error;
       }
     },
-    [isAuthenticated]
-  ); // Dépend de isAuthenticated
+    [isAuthenticated, fetchUserFavorites] // Ajout de fetchUserFavorites aux dépendances
+  );
 
+  // Fonction pour vérifier si un produit est favori
   const isProductFavorite = useCallback(
     (productId) => {
-      return favoriteProductIds.includes(productId);
+      const isFav = favoriteProductIds.includes(productId);
+      console.log(`[AuthContext] Vérification favori pour ${productId}: ${isFav}. Liste actuelle:`, favoriteProductIds);
+      return isFav;
     },
-    [favoriteProductIds]
+    [favoriteProductIds] // Dépend de favoriteProductIds pour se mettre à jour
   );
 
   const value = {
@@ -183,10 +211,10 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateProfile,
-    favoriteProductIds, // NOUVEAU : Exposer favoriteProductIds
-    handleToggleFavorite, // NOUVEAU : Exposer la fonction de bascule
-    isProductFavorite, // NOUVEAU : Exposer la fonction de vérification
-    fetchUserFavorites, // NOUVEAU : Exposer la fonction de récupération
+    favoriteProductIds, // Exposer l'état des IDs favoris
+    handleToggleFavorite, // Exposer la fonction de bascule
+    isProductFavorite, // Exposer la fonction de vérification
+    fetchUserFavorites, // Exposer la fonction de récupération
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -14,11 +14,11 @@ const ProductCard = ({
 
   // Utiliser le contexte d'authentification pour les favoris
   const { isProductFavorite, handleToggleFavorite } = useAuth();
-  const isWishlisted = isProductFavorite(product.id); // Vérifier si ce produit est favori
+  const isWishlisted = isProductFavorite(Number(product.id)); // Vérifier si ce produit est favori
 
   const handleHeartClick = (e) => {
     e.stopPropagation(); // Empêche l'ouverture des détails du produit lors du clic sur le cœur
-    handleToggleFavorite(product.id);
+    handleToggleFavorite(Number(product.id)); // Basculer l'état favori du produit
   };
 
   return (
