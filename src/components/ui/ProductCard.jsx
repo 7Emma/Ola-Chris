@@ -14,11 +14,11 @@ const ProductCard = ({
 
   // Utiliser le contexte d'authentification pour les favoris
   const { isProductFavorite, handleToggleFavorite } = useAuth();
-  const isWishlisted = isProductFavorite(Number(product.id)); // Vérifier si ce produit est favori
+  const isWishlisted = isProductFavorite(product._id); // Vérifier si ce produit est favori
 
   const handleHeartClick = (e) => {
     e.stopPropagation(); // Empêche l'ouverture des détails du produit lors du clic sur le cœur
-    handleToggleFavorite(Number(product.id)); // Basculer l'état favori du produit
+    handleToggleFavorite(product._id); // Basculer l'état favori du produit
   };
 
   return (
@@ -53,7 +53,7 @@ const ProductCard = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onUpdateQuantity(product.id, cartQuantity - 1);
+                onUpdateQuantity(product._id, cartQuantity - 1);
               }}
               className="p-1 border rounded"
             >
@@ -63,7 +63,7 @@ const ProductCard = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onUpdateQuantity(product.id, cartQuantity + 1);
+                onUpdateQuantity(product._id, cartQuantity + 1);
               }}
               disabled={cartQuantity >= product.stock}
               className="p-1 border rounded"

@@ -178,8 +178,8 @@ export const fetchRecentOrders = async () => {
 
 export const toggleFavoriteProduct = async (productId) => {
   try {
-    // Note: Votre backend devrait renvoyer l'état actuel (isFavorite) et la liste complète des favoris
-    // Par exemple: { isFavorite: true, favoriteProductIds: [1, 5, 10] }
+    // IMPORTANT: Votre backend DOIT renvoyer un objet avec { isFavorite: boolean, favoriteProductIds: array_of_numbers }
+    // où favoriteProductIds est la LISTE COMPLÈTE et MISE À JOUR des IDs favoris de l'utilisateur.
     const response = await api.post(`/user/favorites/toggle/${productId}`);
     return response.data;
   } catch (error) {
@@ -195,11 +195,9 @@ export const toggleFavoriteProduct = async (productId) => {
 export const fetchFavoriteProductIds = async () => {
   try {
     const response = await api.get("/user/favorites");
-    // MODIFICATION ICI: Assurez-vous de renvoyer le tableau d'IDs directement.
-    // Votre backend devrait renvoyer soit un tableau d'IDs, soit un objet comme { favoriteIds: [...] }
-    // Si votre backend renvoie { favoriteIds: [...] }, utilisez `response.data.favoriteIds`
-    // Si votre backend renvoie directement un tableau [...], utilisez `response.data`
-    // Pour la flexibilité, nous allons vérifier les deux cas courants:
+    // IMPORTANT: Votre backend DOIT renvoyer un objet comme { favoriteIds: [1, 5, 10] }
+    // OU directement un tableau d'IDs comme [1, 5, 10].
+    // Cette ligne gère les deux cas, mais le backend doit être correct.
     return response.data.favoriteIds || response.data || [];
   } catch (error) {
     console.error(
