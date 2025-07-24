@@ -150,6 +150,8 @@ function Register() {
       try {
         // Récupère le bon token (id_token ou access_token)
         const idToken = tokenResponse.id_token || tokenResponse.access_token;
+        console.log("tokenResponse", tokenResponse);
+        console.log("id_token envoyé au backend:", idToken);
         const backendResponse = await fetch(
           import.meta.env.VITE_REACT_APP_API_URL + "/api/auth/google",
           {
@@ -220,21 +222,21 @@ function Register() {
 
   if (isRegistered) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gradient-to-br from-primaryBlue-100 to-primaryBlue-200 p-4">
         <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-center">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <CheckCircle className="w-8 h-8 text-blue-600" />
+          <div className="mx-auto w-16 h-16 bg-primaryBlue-100 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle className="w-8 h-8 text-primaryBlue-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+          <h2 className="text-3xl font-bold text-primaryBlue-900 mb-4">
             Inscription réussie !
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-primaryBlue-700 mb-6">
             {successMessage ||
               "Votre compte a été créé avec succès. Vous allez être redirigé vers la page de connexion."}
           </p>
           <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
             <div
-              className="bg-blue-600 h-2 rounded-full animate-pulse"
+              className="bg-primaryBlue-600 h-2 rounded-full animate-pulse"
               style={{ width: "100%" }}
             ></div>
           </div>
@@ -245,14 +247,16 @@ function Register() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gradient-to-br from-primaryBlue-100 to-primaryBlue-200 p-4">
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <UserPlus className="w-8 h-8 text-blue-600" />
+          <div className="mx-auto w-16 h-16 bg-primaryBlue-100 rounded-full flex items-center justify-center mb-4">
+            <UserPlus className="w-8 h-8 text-primaryBlue-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">Inscription</h2>
-          <p className="text-gray-600 mt-2">
+          <h2 className="text-3xl font-bold text-primaryBlue-900">
+            Inscription
+          </h2>
+          <p className="text-primaryBlue-700 mt-2">
             Créez votre compte pour commencer
           </p>
         </div>
@@ -286,7 +290,7 @@ function Register() {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primaryBlue-500 focus:border-transparent transition duration-200 ${
                   errors.firstName
                     ? "border-red-300 bg-red-50"
                     : "border-gray-300"
@@ -311,7 +315,7 @@ function Register() {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primaryBlue-500 focus:border-transparent transition duration-200 ${
                   errors.lastName
                     ? "border-red-300 bg-red-50"
                     : "border-gray-300"
@@ -338,7 +342,7 @@ function Register() {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primaryBlue-500 focus:border-transparent transition duration-200 ${
                   errors.email ? "border-red-300 bg-red-50" : "border-gray-300"
                 }`}
                 placeholder="john.doe@example.com"
@@ -363,7 +367,7 @@ function Register() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primaryBlue-500 focus:border-transparent transition duration-200 ${
                   errors.phone ? "border-red-300 bg-red-50" : "border-gray-300"
                 }`}
                 placeholder="+33 1 23 45 67 89"
@@ -388,7 +392,7 @@ function Register() {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primaryBlue-500 focus:border-transparent transition duration-200 ${
                   errors.password
                     ? "border-red-300 bg-red-50"
                     : "border-gray-300"
@@ -451,7 +455,7 @@ function Register() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primaryBlue-500 focus:border-transparent transition duration-200 ${
                   errors.confirmPassword
                     ? "border-red-300 bg-red-50"
                     : "border-gray-300"
@@ -517,7 +521,7 @@ function Register() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-md disabled:transform-none"
+            className="w-full bg-primaryBlue-600 hover:bg-primaryBlue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-md disabled:transform-none"
           >
             {isLoading ? (
               <Spinner size="w-5 h-5" color="border-white" /> // Utilisation du Spinner
@@ -542,13 +546,13 @@ function Register() {
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">
+          <h3 className="text-sm font-medium text-primaryBlue-700 mb-3 text-center">
             Inscription rapide
           </h3>
           <button
             onClick={() => googleRegisterHandler()}
             disabled={isLoading}
-            className="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-sm disabled:transform-none"
+            className="w-full bg-white hover:bg-primaryBlue-50 border border-primaryBlue-200 text-primaryBlue-700 font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-sm disabled:transform-none"
           >
             {isLoading ? ( // Spinner pour le bouton Google
               <Spinner size="w-5 h-5" color="border-gray-500" />
@@ -565,11 +569,11 @@ function Register() {
           </button>
         </div>
 
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-center text-sm text-primaryBlue-700">
           Vous avez déjà un compte ?{" "}
           <Link
             to="/login"
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-accentPink-600 hover:text-accentPink-700 font-medium"
           >
             Se connecter
           </Link>

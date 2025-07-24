@@ -12,7 +12,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function SettingsTab() {
   const { logout } = useAuth();

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import photoAbout from '../assets/bg/photo-about.jpg'
+import photoAbout from "../assets/bg/photo-about.jpg";
 import {
   Target,
   Eye,
@@ -642,7 +642,10 @@ function About() {
               <MapPin className="inline-block mr-2 h-5 w-5" />
               Nos Magasins
             </button>
-            <Link to="/contact" className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30">
+            <Link
+              to="/contact"
+              className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30"
+            >
               <Phone className="inline-block mr-2 h-5 w-5" />
               Nous Contacter
             </Link>

@@ -167,19 +167,19 @@ function Login() {
 
   // --- Rendu JSX ---
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gradient-to-br from-primaryBlue-100 to-primaryBlue-200 p-4">
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
         {/* En-tête de la carte de connexion */}
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 bg-primaryBlue-100 rounded-full flex items-center justify-center mb-4">
             {/* L'icône User est ici ! */}
-            <User className="w-8 h-8 text-blue-600" />
+            <User className="w-8 h-8 text-primaryBlue-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">
+          <h2 className="text-3xl font-bold text-primaryBlue-900">
             {isAuthenticated ? "Bienvenue !" : "Connexion"}
           </h2>
           {!isAuthenticated && (
-            <p className="text-gray-600 mt-2">
+            <p className="text-primaryBlue-700 mt-2">
               Connectez-vous pour accéder à votre compte
             </p>
           )}
@@ -311,7 +311,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={localLoading || authContextLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-md disabled:transform-none"
+                className="w-full bg-primaryBlue-600 hover:bg-primaryBlue-700 disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-md disabled:transform-none"
               >
                 {localLoading || authContextLoading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -336,13 +336,13 @@ function Login() {
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">
+              <h3 className="text-sm font-medium text-primaryBlue-700 mb-3 text-center">
                 Authentification rapide
               </h3>
               <button
                 onClick={() => googleLoginHandler()}
                 disabled={localLoading || authContextLoading}
-                className="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-sm disabled:transform-none"
+                className="w-full bg-white hover:bg-primaryBlue-50 border border-primaryBlue-200 text-primaryBlue-700 font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-300 transform hover:scale-105 shadow-sm disabled:transform-none"
               >
                 <img
                   src="https://www.google.com/favicon.ico"
@@ -353,11 +353,11 @@ function Login() {
               </button>
             </div>
 
-            <div className="mt-6 text-center text-sm text-gray-600">
+            <div className="mt-6 text-center text-sm text-primaryBlue-700">
               Pas encore de compte ?{" "}
               <Link
                 to="/register"
-                className="text-blue-600 hover:text-blue-800 font-medium"
+                className="text-accentPink-600 hover:text-accentPink-700 font-medium"
               >
                 Créer un compte
               </Link>
