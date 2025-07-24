@@ -12,10 +12,10 @@ import {
   Shield,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Links, useNavigate } from "react-router-dom";
 
 function SettingsTab() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   // États pour les modals
@@ -255,6 +255,33 @@ function SettingsTab() {
           </div>
         </div>
       </div>
+
+      {/* Section Gestion (visible seulement pour admin) */}
+      {user?.role === "admin" && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <Settings className="w-5 h-5 mr-2 text-primaryBlue-600" />
+            Gestion
+          </h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-gray-900">
+                Espace d'administration
+              </h4>
+              <p className="text-sm text-gray-500">
+                Accéder à l'interface d'administration
+              </p>
+            </div>
+            <Link
+              to="/admin"
+              className="flex items-center space-x-2 bg-primaryBlue-600 hover:bg-primaryBlue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
+            >
+              <Shield className="w-5 h-5 mr-1" />
+              Admin
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Sécurité */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200">
