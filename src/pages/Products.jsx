@@ -5,6 +5,7 @@ import ProductCard from "../components/ui/ProductCard"; // Assurez-vous que ce c
 import ProductDetails from "../components/futures/ProductsDetails"; // Assurez-vous que ce chemin est correct
 import { getAllProducts } from "../data/products"; // Assurez-vous que ce chemin est correct et que getAllProducts() retourne les produits avec un 'id' unique
 import { getAllCategories } from "../data/categories"; // Assurez-vous que ce chemin est correct
+import { useAuth } from "../context/AuthContext";
 
 const Products = ({
   // Props venant du composant parent (App.jsx via AppRoutes)
@@ -106,7 +107,7 @@ const Products = ({
   // Aide à la quantité du panier (useCallback pour l'optimisation)
   const getCartQuantity = useCallback(
     (productId) => {
-      const item = cartItems.find((item) => item.id === productId);
+      const item = cartItems.find((item) => item._id === productId); // <-- _id
       return item ? item.quantity : 0;
     },
     [cartItems]
@@ -208,6 +209,8 @@ const Products = ({
     </div>
   );
 
+  const { isProductFavorite, handleToggleFavorite } = useAuth();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* En-tête de la page Products (pas de Navbar globale ici) */}
@@ -300,22 +303,25 @@ const Products = ({
                   : "space-y-4" // Pour la vue liste, les éléments s'empilent verticalement
               }`}
             >
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="cursor-pointer"
-                  onClick={() => openProductDetails(product)}
-                >
-                  <ProductCard
-                    product={product}
-                    onAddToCart={onAddToCart}
-                    onUpdateQuantity={onUpdateCartQuantity}
-                    cartQuantity={getCartQuantity(product.id)}
-                    // Les props onToggleWishlist et isWishlisted ne sont plus nécessaires ici
-                    // car ProductCard gère les favoris en interne via useAuth.
-                  />
-                </div>
-              ))}
+              {filteredProducts.map((product) => {
+                const isWishlisted = isProductFavorite(product._id);
+                return (
+                  <div
+                    key={product._id} // <-- Utilise _id ici
+                    className="cursor-pointer"
+                    onClick={() => openProductDetails(product)}
+                  >
+                    <ProductCard
+                      product={product}
+                      onAddToCart={onAddToCart}
+                      onUpdateQuantity={onUpdateCartQuantity}
+                      cartQuantity={getCartQuantity(product._id)} // <-- Utilise _id ici
+                      isWishlisted={isWishlisted}
+                      onToggleFavorite={() => handleToggleFavorite(product._id)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

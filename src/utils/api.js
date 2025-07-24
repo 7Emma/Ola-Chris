@@ -19,17 +19,13 @@ const api = axios.create({
 // Ajouter automatiquement le token JWT à chaque requête si disponible
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // vérifie le nom exact du token
-
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // --- Authentification ---
@@ -133,7 +129,7 @@ export const getProtectedResource = async () => {
  */
 export const getUserProfile = async () => {
   try {
-    const response = await api.get("/user/profile"); // Assurez-vous que cette route existe sur votre backend
+    const response = await api.get("/api/user/profile"); // Corrigé
     return response.data;
   } catch (error) {
     console.error(
@@ -150,7 +146,7 @@ export const getUserProfile = async () => {
 
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await api.put("/user/profile", profileData);
+    const response = await api.put("/api/user/profile", profileData); // Corrigé
     return response.data;
   } catch (error) {
     throw (
@@ -163,7 +159,7 @@ export const updateUserProfile = async (profileData) => {
 
 export const fetchRecentOrders = async () => {
   try {
-    const response = await api.get("/user/orders");
+    const response = await api.get("/api/user/orders"); // Corrigé
     return response.data;
   } catch (error) {
     throw (
@@ -180,7 +176,7 @@ export const toggleFavoriteProduct = async (productId) => {
   try {
     // IMPORTANT: Votre backend DOIT renvoyer un objet avec { isFavorite: boolean, favoriteProductIds: array_of_numbers }
     // où favoriteProductIds est la LISTE COMPLÈTE et MISE À JOUR des IDs favoris de l'utilisateur.
-    const response = await api.post(`/user/favorites/toggle/${productId}`);
+    const response = await api.post(`/api/user/favorites/toggle/${productId}`); // Corrigé
     return response.data;
   } catch (error) {
     console.error("Erreur lors du basculement du produit favori:", error);
@@ -194,7 +190,7 @@ export const toggleFavoriteProduct = async (productId) => {
 
 export const fetchFavoriteProductIds = async () => {
   try {
-    const response = await api.get("/user/favorites");
+    const response = await api.get("/api/user/favorites"); // Corrigé
     // IMPORTANT: Votre backend DOIT renvoyer un objet comme { favoriteIds: [1, 5, 10] }
     // OU directement un tableau d'IDs comme [1, 5, 10].
     // Cette ligne gère les deux cas, mais le backend doit être correct.
