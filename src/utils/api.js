@@ -5,7 +5,7 @@ import axios from "axios";
 // Utiliser import.meta.env.VITE_REACT_APP_API_URL pour Vite
 // Assurez-vous d'avoir VITE_REACT_APP_API_URL défini dans votre fichier .env du frontend
 const API_BASE_URL =
-  import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:5000/api";
+  import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:5000";
 
 // Création d'une instance Axios avec configuration globale
 const api = axios.create({

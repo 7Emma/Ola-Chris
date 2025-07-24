@@ -146,17 +146,36 @@ function Register() {
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       setErrors({});
-      setSuccessMessage(""); // Réinitialise le message de succès
-
+      setSuccessMessage("");
       try {
-        const data = await loginWithGoogle(tokenResponse.access_token); // ou .id_token selon votre backend
-        setSuccessMessage(data.message || "Connexion Google réussie !");
-        navigate("/");
+        // Récupère le bon token (id_token ou access_token)
+        const idToken = tokenResponse.id_token || tokenResponse.access_token;
+        const backendResponse = await fetch(
+          import.meta.env.VITE_REACT_APP_API_URL + "/api/auth/google",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id_token: idToken }),
+          }
+        );
+        const data = await backendResponse.json();
+        if (backendResponse.ok) {
+          setSuccessMessage(data.message || "Connexion Google réussie !");
+          navigate("/");
+        } else {
+          setErrors({
+            general:
+              data.message ||
+              "Échec de l'inscription/connexion Google. Veuillez réessayer.",
+          });
+        }
       } catch (error) {
         console.error("Erreur lors de l'inscription/connexion Google:", error);
         setErrors({
           general:
-            error.message ||
             "Échec de l'inscription/connexion Google. Veuillez réessayer.",
         });
       } finally {

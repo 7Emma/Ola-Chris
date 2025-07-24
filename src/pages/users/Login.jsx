@@ -111,22 +111,21 @@ function Login() {
     onSuccess: async (tokenResponse) => {
       setLocalLoading(true);
       setErrors({});
-
       try {
+        // Récupère le bon token (id_token ou access_token)
+        const idToken = tokenResponse.id_token || tokenResponse.access_token;
         const backendResponse = await fetch(
-          "http://localhost:5000/api/auth/google",
+          import.meta.env.VITE_REACT_APP_API_URL + "/api/auth/google",
           {
             method: "POST",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ id_token: tokenResponse.access_token }),
+            body: JSON.stringify({ id_token: idToken }),
           }
         );
-
         const data = await backendResponse.json();
-
         if (backendResponse.ok) {
           login(data.user, data.token);
           navigate("/");

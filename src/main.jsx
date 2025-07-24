@@ -7,12 +7,11 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext.jsx";
 
-// Remplacez 'VOTRE_CLIENT_ID_GOOGLE_FRONTEND' par votre véritable ID client Google (celui pour les applications web)
-const GOOGLE_CLIENT_ID_FRONTEND = "VOTRE_CLIENT_ID_GOOGLE_FRONTEND";
+console.log("GOOGLE_CLIENT_ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID_FRONTEND}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <AuthProvider>
         <CartProvider>
           {/* Votre composant principal de l'application */}
