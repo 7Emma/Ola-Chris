@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Grid, List, Search, ShoppingCart } from "lucide-react";
-import CategoryFilter from "../components/CategoryFilter";
-import ProductCard from "../components/ProductCard";
-import ProductDetails from "../components/ProductsDetails";
-import { getAllProducts } from "../data/products";
-import { getAllCategories } from "../data/categories";
+import CategoryFilter from "../components/ui/CategoryFilter";
+import ProductCard from "../components/ui/ProductCard"; // Assurez-vous que ce chemin est correct
+import ProductDetails from "../components/futures/ProductsDetails"; // Assurez-vous que ce chemin est correct
+import { getAllProducts } from "../data/products"; // Assurez-vous que ce chemin est correct et que getAllProducts() retourne les produits avec un 'id' unique
+import { getAllCategories } from "../data/categories"; // Assurez-vous que ce chemin est correct
 
 const Products = ({
   // Props venant du composant parent (App.jsx via AppRoutes)
@@ -14,26 +14,28 @@ const Products = ({
   onAddToCart,
   onUpdateCartQuantity,
 }) => {
-  //États principaux
+  // États principaux
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  //États pour les filtres et la recherche
+  // États pour les filtres et la recherche
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [priceRange, setPriceRange] = useState([0, 50000]);
 
-  //États pour le tri
+  // États pour le tri
   const [sortBy, setSortBy] = useState("name"); // Critère de tri : 'name', 'price', 'rating'
   const [sortOrder, setSortOrder] = useState("asc"); // Ordre de tri : 'asc' ou 'desc'
 
-  //États pour l'affichage et les modales
+  // États pour l'affichage et les modales
   const [viewMode, setViewMode] = useState("grid");
   const [selectedProduct, setSelectedProduct] = useState(null); // Produit actuellement affiché dans la modale des détails
   const [isProductDetailsOpen, setIsProductDetailsOpen] = useState(false); // État d'ouverture de la modale des détails du produit
 
+  // Effet pour charger tous les produits au démarrage
   useEffect(() => {
     setIsLoading(true);
+    // Simuler un délai de chargement de données
     setTimeout(() => {
       const allProducts = getAllProducts();
       setProducts(allProducts);
@@ -41,10 +43,11 @@ const Products = ({
     }, 500);
   }, []);
 
+  // Effet pour filtrer et trier les produits lorsque les dépendances changent
   useEffect(() => {
     let result = [...products];
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    const categoriesData = getAllCategories();
+    const categoriesData = getAllCategories(); // Assurez-vous que cette fonction existe et est correcte
 
     // 1. Recherche par terme (Nom, Description, Marque, et Nom de Catégorie)
     if (lowerCaseSearchTerm && lowerCaseSearchTerm.trim()) {
@@ -58,27 +61,27 @@ const Products = ({
           product.name.toLowerCase().includes(lowerCaseSearchTerm) ||
           product.description.toLowerCase().includes(lowerCaseSearchTerm) ||
           (product.brand &&
-            product.brand.toLowerCase().includes(lowerCaseSearchTerm)) || // Vérifier l'existence de la marque
+            product.brand.toLowerCase().includes(lowerCaseSearchTerm)) ||
           (categoryName &&
-            categoryName.toLowerCase().includes(lowerCaseSearchTerm)) // Vérifier l'existence du nom de catégorie
+            categoryName.toLowerCase().includes(lowerCaseSearchTerm))
         );
       });
     }
 
-    //Filtrer par catégorie sélectionnée
+    // Filtrer par catégorie sélectionnée
     if (selectedCategory !== "all") {
       result = result.filter(
         (product) => product.categoryId === parseInt(selectedCategory, 10)
       );
     }
 
-    //Filtrer par plage de prix
+    // Filtrer par plage de prix
     result = result.filter(
       (product) =>
         product.price >= priceRange[0] && product.price <= priceRange[1]
     );
 
-    //Trier les produits
+    // Trier les produits
     result.sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -89,7 +92,7 @@ const Products = ({
           comparison = a.price - b.price;
           break;
         case "rating":
-          comparison = (b.rating || 0) - (a.rating || 0); // Décroissant pour la note
+          comparison = (b.rating || 0) - (a.rating || 0); // Tri décroissant pour la note
           break;
         default:
           comparison = 0;
@@ -100,7 +103,7 @@ const Products = ({
     setFilteredProducts(result);
   }, [products, selectedCategory, searchTerm, sortBy, sortOrder, priceRange]);
 
-  //Aide à la quantité du panier (useCallback pour l'optimisation
+  // Aide à la quantité du panier (useCallback pour l'optimisation)
   const getCartQuantity = useCallback(
     (productId) => {
       const item = cartItems.find((item) => item.id === productId);
@@ -109,7 +112,7 @@ const Products = ({
     [cartItems]
   );
 
-  //Gestion des détails du produit (useCallback pour l'optimisation)
+  // Gestion des détails du produit (useCallback pour l'optimisation)
   const openProductDetails = useCallback((product) => {
     setSelectedProduct(product);
     setIsProductDetailsOpen(true);
@@ -120,7 +123,7 @@ const Products = ({
     setSelectedProduct(null);
   }, []);
 
-  //Composant interne pour les contrôles de tri et de filtre
+  // Composant interne pour les contrôles de tri et de filtre
   const SortAndFilterControls = () => (
     <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
       <div className="flex items-center gap-2">
@@ -147,7 +150,7 @@ const Products = ({
         <input
           type="range"
           min="0"
-          max="50000"
+          max="50000" // Assurez-vous que cette valeur max est pertinente pour vos prix
           value={priceRange[1]}
           onChange={(e) =>
             setPriceRange([priceRange[0], parseInt(e.target.value, 10)])
@@ -186,7 +189,7 @@ const Products = ({
     </div>
   );
 
-  //Composant de squelette de chargement
+  // Composant de squelette de chargement
   const LoadingGrid = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {[...Array(8)].map((_, index) => (
@@ -308,7 +311,8 @@ const Products = ({
                     onAddToCart={onAddToCart}
                     onUpdateQuantity={onUpdateCartQuantity}
                     cartQuantity={getCartQuantity(product.id)}
-                    viewMode={viewMode}
+                    // Les props onToggleWishlist et isWishlisted ne sont plus nécessaires ici
+                    // car ProductCard gère les favoris en interne via useAuth.
                   />
                 </div>
               ))}

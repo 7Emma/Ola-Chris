@@ -1,6 +1,6 @@
 import React from 'react';
-import { getAllCategories } from '../data/categories';
-import { getProductsByCategory, getAllProducts } from '../data/products';
+import { getAllCategories } from '../../data/categories';
+import { getProductsByCategory, getAllProducts } from '../../data/products';
 
 const CategoryFilter = ({ selectedCategory, onCategoryChange, searchTerm }) => {
   const categories = getAllCategories();

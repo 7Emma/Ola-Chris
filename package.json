@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "autoprefixer": "^10.4.21",
+    "axios": "^1.11.0",
     "chart.js": "^4.5.0",
     "lucide-react": "^0.515.0",
     "postcss": "^8.5.5",

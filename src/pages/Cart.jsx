@@ -1,4 +1,6 @@
+// src/pages/Cart.jsx
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Importez useNavigate
 import {
   ShoppingCart,
   Plus,
@@ -8,26 +10,28 @@ import {
   ShoppingBag,
   CreditCard,
 } from "lucide-react";
+import { useCart } from '../context/CartContext'; // Importez le hook useCart
 
-const Cart = ({
-  cartItems,
-  onUpdateQuantity,
-  onRemoveItem,
-  onClearCart,
-  isOpen,
-  onClose,
-}) => {
+const Cart = () => { // Le composant Cart ne reçoit plus de props de panier directement
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const navigate = useNavigate(); // Initialisez useNavigate
 
-  // Calculs du panier
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // Utilisez le hook useCart pour accéder à l'état et aux actions du panier
+  const {
+    items: cartItems, // Renommez 'items' en 'cartItems' pour la lisibilité
+    isOpen,
+    toggleCart, // Pour fermer/ouvrir le panier
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    total: subtotal, // Utilisez le total calculé par le reducer comme sous-total initial
+  } = useCart();
+
+  // Calculs pour la livraison et la promotion
   const deliveryFee = subtotal > 50 ? 0 : 4.99;
   const promoDiscount = appliedPromo ? subtotal * 0.1 : 0; // 10% de réduction
-  const total = subtotal + deliveryFee - promoDiscount;
+  const finalTotal = subtotal + deliveryFee - promoDiscount; // Renommé pour éviter la confusion avec 'total' du contexte
 
   const handlePromoCode = () => {
     if (promoCode.toLowerCase() === "welcome10") {
@@ -37,34 +41,28 @@ const Cart = ({
     }
   };
 
-  const handleIncrement = (productId) => {
-    const item = cartItems.find((item) => item.id === productId);
-    if (item && item.quantity < item.stock) {
-      onUpdateQuantity(productId, item.quantity + 1);
+  const handleIncrement = (item) => { // La fonction reçoit directement l'item
+    if (item && item.quantity < item.inStock) { // Utilisez 'inStock' de l'item du panier
+      updateQuantity(item.id, item.quantity + 1, item.selectedColor, item.selectedSize);
     }
   };
 
-  const handleDecrement = (productId) => {
-    const item = cartItems.find((item) => item.id === productId);
+  const handleDecrement = (item) => { // La fonction reçoit directement l'item
     if (item && item.quantity > 1) {
-      onUpdateQuantity(productId, item.quantity - 1);
+      updateQuantity(item.id, item.quantity - 1, item.selectedColor, item.selectedSize);
     } else {
-      onRemoveItem(productId);
+      removeFromCart(item.id, item.selectedColor, item.selectedSize);
     }
   };
 
-  const handleCheckout = () => {
-    alert("Redirection vers la page de paiement...");
-  };
-
-  if (!isOpen) return null;
+  if (!isOpen) return null; // Utilisez 'isOpen' du contexte
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={toggleCart} // Utilisez toggleCart pour fermer
       />
 
       {/* Cart Panel */}
@@ -78,7 +76,7 @@ const Cart = ({
             </h2>
           </div>
           <button
-            onClick={onClose}
+            onClick={toggleCart} // Utilisez toggleCart pour fermer
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
             <X size={20} />
@@ -98,7 +96,7 @@ const Cart = ({
                 Ajoutez des produits pour commencer vos achats
               </p>
               <button
-                onClick={onClose}
+                onClick={toggleCart} // Utilisez toggleCart pour fermer et continuer
                 className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
               >
                 Continuer mes achats
@@ -109,7 +107,7 @@ const Cart = ({
             <div className="p-4 space-y-4">
               {cartItems.map((item) => (
                 <div
-                  key={item.id}
+                  key={`${item.id}-${item.selectedColor || ''}-${item.selectedSize || ''}`} // Clé unique pour les variations
                   className="flex gap-4 bg-gray-50 rounded-lg p-4"
                 >
                   {/* Product Image */}
@@ -126,6 +124,8 @@ const Cart = ({
                     <h4 className="font-medium text-gray-900 truncate">
                       {item.name}
                     </h4>
+                    {item.selectedColor && <p className="text-xs text-gray-500">Couleur: {item.selectedColor}</p>}
+                    {item.selectedSize && <p className="text-xs text-gray-500">Taille: {item.selectedSize}</p>}
                     <p className="text-sm text-gray-500 mb-2">
                       {item.price.toFixed(2)} FCFA / unité
                     </p>
@@ -134,7 +134,7 @@ const Cart = ({
                     <div className="flex items-center gap-3">
                       <div className="flex items-center bg-white rounded-lg">
                         <button
-                          onClick={() => handleDecrement(item.id)}
+                          onClick={() => handleDecrement(item)} // Passez l'item complet
                           className="p-2 text-gray-500 hover:text-red-500 transition-colors"
                         >
                           <Minus size={16} />
@@ -143,10 +143,10 @@ const Cart = ({
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleIncrement(item.id)}
-                          disabled={item.quantity >= item.stock}
+                          onClick={() => handleIncrement(item)} // Passez l'item complet
+                          disabled={item.quantity >= item.inStock}
                           className={`p-2 transition-colors ${
-                            item.quantity >= item.stock
+                            item.quantity >= item.inStock
                               ? "text-gray-300 cursor-not-allowed"
                               : "text-gray-500 hover:text-green-500"
                           }`}
@@ -157,7 +157,7 @@ const Cart = ({
 
                       {/* Remove Button */}
                       <button
-                        onClick={() => onRemoveItem(item.id)}
+                        onClick={() => removeFromCart(item.id, item.selectedColor, item.selectedSize)} // Utilisez removeFromCart du contexte
                         className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 size={16} />
@@ -170,9 +170,9 @@ const Cart = ({
                     <p className="font-semibold text-gray-900">
                       {(item.price * item.quantity).toFixed(2)} FCFA
                     </p>
-                    {item.quantity >= item.stock && (
+                    {item.quantity >= item.inStock && (
                       <p className="text-xs text-orange-500 mt-1">
-                        Stock limité
+                        Stock limité ({item.inStock} restants)
                       </p>
                     )}
                   </div>
@@ -182,7 +182,7 @@ const Cart = ({
               {/* Clear Cart Button */}
               {cartItems.length > 0 && (
                 <button
-                  onClick={onClearCart}
+                  onClick={clearCart} // Utilisez clearCart du contexte
                   className="w-full py-2 text-sm text-red-600 hover:text-red-700 transition-colors"
                 >
                   Vider le panier
@@ -237,13 +237,13 @@ const Cart = ({
                 <span className={deliveryFee === 0 ? "text-green-600" : ""}>
                   {deliveryFee === 0
                     ? "Gratuite"
-                    : `${deliveryFee.toFixed(2)} €`}
+                    : `${deliveryFee.toFixed(2)} FCFA`} {/* Afficher en FCFA */}
                 </span>
               </div>
 
-              {subtotal < 50 && (
+              {subtotal < 50 && ( // 50 FCFA
                 <p className="text-xs text-gray-500">
-                  Livraison gratuite dès 50000 FCFA d'achat
+                  Livraison gratuite dès 50 FCFA d'achat
                 </p>
               )}
 
@@ -256,22 +256,23 @@ const Cart = ({
 
               <div className="flex justify-between font-semibold text-lg border-t pt-2">
                 <span>Total</span>
-                <span>{total.toFixed(2)} FCFA</span>
+                <span>{finalTotal.toFixed(2)} FCFA</span>
               </div>
             </div>
 
             {/* Checkout Button */}
-            <button
-              onClick={handleCheckout}
+            <Link
+              to="/checkout" /* Rediriger vers /checkout */
+              onClick={toggleCart} // Fermer le panier au clic
               className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
             >
               <CreditCard size={20} />
               Passer commande
-            </button>
+            </Link>
 
             {/* Continue Shopping */}
             <button
-              onClick={onClose}
+              onClick={toggleCart} // Utilisez toggleCart
               className="w-full text-gray-600 py-2 text-sm hover:text-gray-800 transition-colors"
             >
               Continuer mes achats

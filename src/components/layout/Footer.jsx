@@ -7,7 +7,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import Logo from "../assets/logo.svg";
+import Logo from "../../assets/logo.svg";
 
 function Footer() {
   const currentYear = new Date().getFullYear();

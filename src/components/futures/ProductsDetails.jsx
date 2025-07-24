@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Plus, Minus, Star, Heart, ShoppingCart, Info, Leaf, Award, Truck, Shield } from 'lucide-react';
-import { getCategoryById } from '../data/categories';
+import { getCategoryById } from '../../data/categories';
 
 const ProductDetails = ({ product, isOpen, onClose, onAddToCart, onUpdateQuantity, cartQuantity = 0 }) => {
   const [selectedImage, setSelectedImage] = useState(0);
