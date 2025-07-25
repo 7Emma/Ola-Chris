@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import Register from "../pages/users/Register";
 import SupermarketProfile from "../pages/users/Profile";
-import AdminDashboard from "../pages/admin/AdminDashboard"; // Importez le tableau de bord admin
+import AdminDashboard from "../pages/AdminDashboard"; // Importez le tableau de bord admin
 
 // Composant utilitaire pour la redirection vers la connexion
 function RedirectToLogin() {

@@ -6,12 +6,14 @@ import {
   Award,
   Settings,
   AlertCircle,
+  Camera, // Ajout de l'icône caméra pour l'upload
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import {
   updateUserProfile,
   fetchRecentOrders,
   fetchFavoriteProductIds,
+  uploadProfilePicture, // Nouvelle fonction d'API pour l'upload
 } from "../../utils/api";
 import Spinner from "../../components/ui/Spinner"; // Ajustez ce chemin si votre Spinner est ailleurs
 
@@ -45,6 +47,8 @@ function SupermarketProfile() {
     address: "",
     city: "",
     postalCode: "",
+    profilePicture: null, // Pour stocker l'objet fichier sélectionné
+    profilePictureUrl: "", // Pour stocker l'URL de prévisualisation (locale ou existante)
   });
 
   const [recentOrders, setRecentOrders] = useState([]);
@@ -58,6 +62,14 @@ function SupermarketProfile() {
   // Effet pour charger les données de l'utilisateur dans le formulaire
   // lorsque le composant monte ou que l'objet user du contexte change.
   useEffect(() => {
+    console.log(
+      "useEffect: authLoading",
+      authLoading,
+      "isAuthenticated",
+      isAuthenticated,
+      "user",
+      user
+    );
     if (!authLoading && isAuthenticated && user) {
       setFormData({
         firstName: user.firstName || "",
@@ -70,11 +82,18 @@ function SupermarketProfile() {
         address: user.address || "",
         city: user.city || "",
         postalCode: user.postalCode || "",
+        profilePicture: null, // Réinitialiser le fichier d'image lors du chargement initial
+        profilePictureUrl: user.picture || user.avatar || "", // Utiliser l'URL existante pour la prévisualisation
       });
+      console.log(
+        "useEffect: Données utilisateur chargées dans formData. profilePictureUrl:",
+        user.picture || user.avatar || ""
+      );
       setApiError(null);
       setApiSuccess(null);
     } else if (!authLoading && !isAuthenticated) {
       setApiError("Vous devez être connecté pour voir votre profil.");
+      console.log("useEffect: Utilisateur non authentifié.");
     }
   }, [user, isAuthenticated, authLoading]);
 
@@ -89,6 +108,7 @@ function SupermarketProfile() {
         try {
           const data = await fetchRecentOrders();
           setRecentOrders(data);
+          console.log("Commandes récentes récupérées:", data);
         } catch (error) {
           console.error("Erreur lors de la récupération des commandes:", error);
           setOrdersError(
@@ -105,6 +125,7 @@ function SupermarketProfile() {
         try {
           const data = await fetchFavoriteProductIds();
           setFavoriteProducts(data);
+          console.log("Produits favoris récupérés:", data);
         } catch (error) {
           console.error("Erreur lors de la récupération des favoris:", error);
           setFavoritesError(
@@ -129,25 +150,95 @@ function SupermarketProfile() {
     }));
     setApiError(null);
     setApiSuccess(null);
+    console.log("Champ modifié:", name, value);
+  };
+
+  // Nouvelle fonction pour gérer le changement de photo de profil
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({
+        ...prev,
+        profilePicture: file, // Stocke l'objet fichier
+        profilePictureUrl: fileUrl, // Crée une URL temporaire pour la prévisualisation
+      }));
+      setApiError(null);
+      setApiSuccess(null);
+      console.log(
+        "Photo de profil sélectionnée. Fichier:",
+        file,
+        "URL de prévisualisation:",
+        fileUrl
+      );
+    } else {
+      console.log("Aucun fichier sélectionné.");
+    }
   };
 
   const handleSave = async () => {
     setIsLoading(true);
     setApiError(null);
     setApiSuccess(null);
+    console.log(
+      "Tentative de sauvegarde du profil. formData actuel:",
+      formData
+    );
 
     try {
       if (!formData.firstName || !formData.lastName || !formData.email) {
         setApiError("Le prénom, le nom et l'email sont obligatoires.");
         setIsLoading(false);
+        console.log("Erreur de validation: Champs obligatoires manquants.");
         return;
       }
 
-      const response = await updateUserProfile(formData);
-      authContextUpdateProfile(response.user);
+      // Mettre à jour les informations de texte du profil
+      const updatedProfileData = { ...formData };
+      delete updatedProfileData.profilePicture; // Ne pas envoyer le fichier direct dans cette mise à jour
+      delete updatedProfileData.profilePictureUrl; // Ne pas envoyer l'URL de prévisualisation
+
+      console.log(
+        "Mise à jour des données textuelles du profil:",
+        updatedProfileData
+      );
+      const profileUpdateResponse = await updateUserProfile(updatedProfileData);
+      console.log(
+        "Réponse de la mise à jour du profil textuel:",
+        profileUpdateResponse
+      );
+      // Mettre à jour le contexte d'authentification avec les dernières données utilisateur (hors nouvelle image pour l'instant)
+      authContextUpdateProfile(profileUpdateResponse.user);
+      console.log(
+        "Contexte d'authentification mis à jour avec les données textuelles. Utilisateur actuel dans le contexte:",
+        user
+      );
+
+      // Si une nouvelle image a été sélectionnée, l'uploader séparément
+      if (formData.profilePicture) {
+        console.log("Téléchargement de la nouvelle photo de profil...");
+        const uploadResponse = await uploadProfilePicture(
+          formData.profilePicture
+        );
+        console.log(
+          "Réponse du téléchargement de la photo de profil:",
+          uploadResponse
+        );
+        // Mettre à jour le contexte d'authentification à nouveau avec la nouvelle URL de l'image reçue du backend
+        authContextUpdateProfile(uploadResponse.user);
+        console.log(
+          "Contexte d'authentification mis à jour avec la nouvelle photo. Utilisateur actuel dans le contexte:",
+          user
+        );
+        setApiSuccess("Profil et photo de profil mis à jour avec succès !");
+      } else {
+        setApiSuccess(
+          profileUpdateResponse.message || "Profil mis à jour avec succès !"
+        );
+      }
 
       setIsEditing(false);
-      setApiSuccess(response.message || "Profil mis à jour avec succès !");
+      console.log("Profil sauvegardé avec succès.");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde du profil:", error);
       setApiError(
@@ -157,6 +248,14 @@ function SupermarketProfile() {
       );
     } finally {
       setIsLoading(false);
+      // Révoquer l'URL de l'objet si elle a été créée, pour libérer de la mémoire
+      if (
+        formData.profilePictureUrl &&
+        formData.profilePictureUrl.startsWith("blob:")
+      ) {
+        URL.revokeObjectURL(formData.profilePictureUrl);
+        console.log("Ancienne URL d'objet révoquée.");
+      }
     }
   };
 
@@ -186,7 +285,7 @@ function SupermarketProfile() {
           Vous devez être connecté pour accéder à cette page.
         </p>
         {/* Vous pourriez ajouter un bouton pour rediriger vers la connexion */}
-        {/* <Link to="/login" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Se connecter</Link> */}
+        <Link to="/login" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Se connecter</Link>
       </div>
     );
   }
@@ -200,13 +299,31 @@ function SupermarketProfile() {
             <div className="relative">
               <img
                 src={
-                  user.picture ||
-                  user.avatar ||
-                  "https://via.placeholder.com/150"
+                  formData.profilePictureUrl || // Priorité 1: L'URL de la nouvelle photo sélectionnée par l'utilisateur (pour prévisualisation)
+                  user.picture || // Priorité 2: L'URL de la photo de profil existante de l'utilisateur
+                  user.avatar || // Priorité 3: L'URL de l'avatar existant de l'utilisateur
+                  "https://images.app.goo.gl/A1NpAWx21hhC1bdYA"
                 }
                 alt="Avatar"
                 className="w-20 h-20 rounded-full object-cover border-4 border-green-200"
               />
+              {isEditing && (
+                // Le label agit comme une zone cliquable pour l'input de fichier caché
+                <label
+                  htmlFor="profile-picture-upload"
+                  className="absolute -bottom-1 -right-1 w-8 h-8 bg-green-600 rounded-full border-2 border-white flex items-center justify-center cursor-pointer hover:bg-green-700 transition"
+                  title="Changer la photo de profil"
+                >
+                  <Camera className="w-4 h-4 text-white" />
+                  <input
+                    id="profile-picture-upload"
+                    type="file"
+                    accept="image/*" // N'accepte que les fichiers image
+                    onChange={handleProfilePictureChange}
+                    className="hidden" // Cache l'input de fichier par défaut
+                  />
+                </label>
+              )}
               <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                 <span className="text-xs font-bold text-white">
                   {user.level ? user.level[0] : ""}
@@ -274,6 +391,9 @@ function SupermarketProfile() {
               setIsEditing={setIsEditing}
               setApiError={setApiError}
               setApiSuccess={setApiSuccess}
+              // handleProfilePictureChange n'est pas directement utilisé dans ProfileInfoTab pour l'instant,
+              // car l'interface utilisateur de téléchargement est dans SupermarketProfile.
+              // Si vous décidez de déplacer l'input dans ProfileInfoTab, passez-le ici.
             />
           )}
           {activeTab === "orders" && (
