@@ -1,17 +1,30 @@
 import React, { useState } from "react";
 import { Search, Plus, Eye, Edit, Trash2 } from "lucide-react";
-// Modal n'est plus importé ici, car il est géré par AdminDashboard
-// Les composants de contenu de modal seront gérés par AdminDashboard
+import Modal from "./Modal"; // Assurez-vous du chemin correct
 
 /**
  * Composant de gestion des utilisateurs pour le tableau de bord admin.
  * @param {object} props - Les props du composant.
  * @param {Array<object>} props.users - La liste des utilisateurs.
- * @param {function} props.onShowModal - Fonction pour demander à AdminDashboard d'afficher un modal.
+ * @param {function} props.setUsers - Fonction pour mettre à jour la liste des utilisateurs.
+ * @param {function} props.onAddUser - Fonction pour gérer l'ajout d'un utilisateur.
+ * @param {function} props.onEditUser - Fonction pour gérer la modification d'un utilisateur.
+ * @param {function} props.onDeleteUser - Fonction pour gérer la suppression d'un utilisateur.
  */
-const UserManagement = ({ users, onShowModal }) => {
+const UserManagement = ({
+  users,
+  setUsers,
+  onAddUser,
+  onEditUser,
+  onDeleteUser,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [showModal, setShowModal] = useState({
+    show: false,
+    type: "",
+    data: null,
+  });
 
   // Filtrer et rechercher les utilisateurs
   const filteredUsers = users.filter((user) => {
@@ -24,6 +37,217 @@ const UserManagement = ({ users, onShowModal }) => {
       user.status === selectedFilter;
     return matchesSearch && matchesFilter;
   });
+
+  const getModalTitle = () => {
+    switch (showModal.type) {
+      case "add-user":
+        return "Ajouter un utilisateur";
+      case "edit-user":
+        return "Modifier l'utilisateur";
+      case "view-user":
+        return "Détails de l'utilisateur";
+      case "delete-user":
+        return "Supprimer l'utilisateur";
+      default:
+        return "Modal Utilisateur";
+    }
+  };
+
+  const renderModalContent = () => {
+    switch (showModal.type) {
+      case "add-user":
+      case "edit-user": {
+        const isEditing = showModal.type === "edit-user";
+        const initialData = isEditing
+          ? showModal.data
+          : {
+              firstName: "",
+              lastName: "",
+              email: "",
+              phone: "",
+              password: "",
+              role: "user",
+            };
+        const [formData, setFormData] = useState(initialData);
+
+        const handleChange = (e) => {
+          const { name, value } = e.target;
+          setFormData((prev) => ({ ...prev, [name]: value }));
+        };
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (isEditing) {
+            onEditUser(formData); // Appeler la fonction de modification du parent
+          } else {
+            onAddUser(formData); // Appeler la fonction d'ajout du parent
+          }
+          setShowModal({ show: false, type: "", data: null });
+        };
+
+        return (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Prénom
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nom
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Téléphone
+              </label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone || ""}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            {!isEditing && ( // Le mot de passe n'est requis que pour l'ajout initial
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mot de passe
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rôle
+              </label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="user">Utilisateur</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() =>
+                  setShowModal({ show: false, type: "", data: null })
+                }
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                {isEditing ? "Sauvegarder" : "Ajouter"}
+              </button>
+            </div>
+          </form>
+        );
+      }
+      case "view-user": {
+        const user = showModal.data;
+        return user ? (
+          <div className="space-y-4">
+            <div>
+              <span className="font-medium">Nom:</span> {user.name}
+            </div>
+            <div>
+              <span className="font-medium">Email:</span> {user.email}
+            </div>
+            <div>
+              <span className="font-medium">Rôle:</span> {user.role}
+            </div>
+            <div>
+              <span className="font-medium">Statut:</span> {user.status}
+            </div>
+            <div>
+              <span className="font-medium">Date d'inscription:</span>{" "}
+              {new Date(user.joinDate).toLocaleDateString()}
+            </div>
+            <div>
+              <span className="font-medium">Commandes:</span> {user.orders}
+            </div>
+          </div>
+        ) : null;
+      }
+      case "delete-user": {
+        const userToDelete = showModal.data;
+        return userToDelete ? (
+          <div>
+            <p className="mb-4">
+              Êtes-vous sûr de vouloir supprimer l'utilisateur{" "}
+              <span className="font-semibold">
+                {userToDelete.name} ({userToDelete.email})
+              </span>{" "}
+              ? Cette action est irréversible.
+            </p>
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() =>
+                  setShowModal({ show: false, type: "", data: null })
+                }
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteUser(userToDelete.id);
+                  setShowModal({ show: false, type: "", data: null });
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+        ) : null;
+      }
+      default:
+        return <p>Contenu du modal non défini</p>;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -57,7 +281,7 @@ const UserManagement = ({ users, onShowModal }) => {
             </select>
             <button
               onClick={() =>
-                onShowModal({ show: true, type: "add-user", data: null })
+                setShowModal({ show: true, type: "add-user", data: null })
               }
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center"
             >
@@ -140,7 +364,7 @@ const UserManagement = ({ users, onShowModal }) => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() =>
-                          onShowModal({
+                          setShowModal({
                             show: true,
                             type: "view-user",
                             data: user,
@@ -153,7 +377,7 @@ const UserManagement = ({ users, onShowModal }) => {
                       </button>
                       <button
                         onClick={() =>
-                          onShowModal({
+                          setShowModal({
                             show: true,
                             type: "edit-user",
                             data: user,
@@ -166,7 +390,7 @@ const UserManagement = ({ users, onShowModal }) => {
                       </button>
                       <button
                         onClick={() =>
-                          onShowModal({
+                          setShowModal({
                             show: true,
                             type: "delete-user",
                             data: user,
@@ -185,6 +409,16 @@ const UserManagement = ({ users, onShowModal }) => {
           </table>
         </div>
       </div>
+
+      {/* Modal pour la gestion des utilisateurs */}
+      <Modal
+        show={showModal.show}
+        onClose={() => setShowModal({ show: false, type: "", data: null })}
+        title={getModalTitle()}
+        size={showModal.type === "view-user" ? "md" : "sm"}
+      >
+        {renderModalContent()}
+      </Modal>
     </div>
   );
 };

@@ -1,17 +1,30 @@
 import React, { useState } from "react";
 import { Search, Plus, Edit, Trash2, Package, Star } from "lucide-react";
-// Modal n'est plus importé ici, car il est géré par AdminDashboard
-// Les composants de contenu de modal seront gérés par AdminDashboard
+import Modal from "./Modal"; // Assurez-vous du chemin correct
 
 /**
  * Composant de gestion des produits pour le tableau de bord admin.
  * @param {object} props - Les props du composant.
  * @param {Array<object>} props.products - La liste des produits.
- * @param {function} props.onShowModal - Fonction pour demander à AdminDashboard d'afficher un modal.
+ * @param {function} props.setProducts - Fonction pour mettre à jour la liste des produits.
+ * @param {function} props.onAddProduct - Fonction pour gérer l'ajout d'un produit.
+ * @param {function} props.onEditProduct - Fonction pour gérer la modification d'un produit.
+ * @param {function} props.onDeleteProduct - Fonction pour gérer la suppression d'un produit.
  */
-const ProductManagement = ({ products, onShowModal }) => {
+const ProductManagement = ({
+  products,
+  setProducts,
+  onAddProduct,
+  onEditProduct,
+  onDeleteProduct,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showModal, setShowModal] = useState({
+    show: false,
+    type: "",
+    data: null,
+  });
 
   // Filtrer et rechercher les produits
   const filteredProducts = products.filter((product) => {
@@ -22,6 +35,179 @@ const ProductManagement = ({ products, onShowModal }) => {
       selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const getModalTitle = () => {
+    switch (showModal.type) {
+      case "add-product":
+        return "Ajouter un produit";
+      case "edit-product":
+        return "Modifier le produit";
+      case "delete-product":
+        return "Supprimer le produit";
+      default:
+        return "Modal Produit";
+    }
+  };
+
+  const renderModalContent = () => {
+    switch (showModal.type) {
+      case "add-product":
+      case "edit-product":
+        const isEditing = showModal.type === "edit-product";
+        const initialData = isEditing
+          ? showModal.data
+          : {
+              name: "",
+              category: "Electronics",
+              price: 0,
+              stock: 0,
+              status: "active",
+            };
+        const [formData, setFormData] = useState(initialData);
+
+        const handleChange = (e) => {
+          const { name, value } = e.target;
+          setFormData((prev) => ({
+            ...prev,
+            [name]:
+              name === "price" || name === "stock" ? Number(value) : value,
+          }));
+        };
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (isEditing) {
+            onEditProduct(formData);
+          } else {
+            onAddProduct(formData);
+          }
+          setShowModal({ show: false, type: "", data: null });
+        };
+
+        return (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nom du produit
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Catégorie
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Electronics">Electronics</option>
+                <option value="Audio">Audio</option>
+                <option value="Accessories">Accessories</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Prix
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Statut
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="active">Actif</option>
+                <option value="out_of_stock">Rupture de stock</option>
+              </select>
+            </div>
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() =>
+                  setShowModal({ show: false, type: "", data: null })
+                }
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                {isEditing ? "Sauvegarder" : "Ajouter"}
+              </button>
+            </div>
+          </form>
+        );
+      case "delete-product":
+        const productToDelete = showModal.data;
+        return productToDelete ? (
+          <div>
+            <p className="mb-4">
+              Êtes-vous sûr de vouloir supprimer le produit{" "}
+              <span className="font-semibold">{productToDelete.name}</span> ?
+              Cette action est irréversible.
+            </p>
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() =>
+                  setShowModal({ show: false, type: "", data: null })
+                }
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteProduct(productToDelete.id);
+                  setShowModal({ show: false, type: "", data: null });
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+        ) : null;
+      default:
+        return <p>Contenu du modal non défini</p>;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -54,7 +240,7 @@ const ProductManagement = ({ products, onShowModal }) => {
             </select>
             <button
               onClick={() =>
-                onShowModal({ show: true, type: "add-product", data: null })
+                setShowModal({ show: true, type: "add-product", data: null })
               }
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center"
             >
@@ -105,7 +291,7 @@ const ProductManagement = ({ products, onShowModal }) => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() =>
-                      onShowModal({
+                      setShowModal({
                         show: true,
                         type: "edit-product",
                         data: product,
@@ -118,7 +304,7 @@ const ProductManagement = ({ products, onShowModal }) => {
                   </button>
                   <button
                     onClick={() =>
-                      onShowModal({
+                      setShowModal({
                         show: true,
                         type: "delete-product",
                         data: product,
@@ -135,6 +321,16 @@ const ProductManagement = ({ products, onShowModal }) => {
           </div>
         ))}
       </div>
+
+      {/* Modal pour la gestion des produits */}
+      <Modal
+        show={showModal.show}
+        onClose={() => setShowModal({ show: false, type: "", data: null })}
+        title={getModalTitle()}
+        size="md"
+      >
+        {renderModalContent()}
+      </Modal>
     </div>
   );
 };

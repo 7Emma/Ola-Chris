@@ -2,21 +2,21 @@
 
 import axios from "axios";
 
-// Use import.meta.env.VITE_REACT_APP_API_URL for Vite
-// Ensure you have VITE_REACT_APP_API_URL defined in your frontend's .env file
+// Utiliser import.meta.env.VITE_REACT_APP_API_URL pour Vite
+// Assurez-vous d'avoir VITE_REACT_APP_API_URL défini dans votre fichier .env du frontend
 const API_BASE_URL =
   import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:5000";
 
-// Create an Axios instance with global configuration
+// Création d'une instance Axios avec configuration globale
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // Allows sending cookies (for JWT)
+  withCredentials: true, // Permet l'envoi des cookies (pour JWT)
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Automatically add JWT token to each request if available
+// Ajouter automatiquement le token JWT à chaque requête si disponible
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -28,7 +28,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// --- Authentication ---
+// --- Authentification ---
 
 export const registerUser = async (userData) => {
   try {
@@ -38,7 +38,7 @@ export const registerUser = async (userData) => {
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Unknown registration error."
+      "Erreur d'inscription inconnue."
     );
   }
 };
@@ -49,38 +49,42 @@ export const loginUser = async (credentials) => {
     return response.data;
   } catch (error) {
     throw (
-      error.response?.data?.message || error.message || "Unknown login error."
+      error.response?.data?.message ||
+      error.message ||
+      "Erreur de connexion inconnue."
     );
   }
 };
 
 export const handleGoogleAuth = async (id_token_object) => {
   try {
-    const response = await api.post("/api/auth/google", id_token_object); // Corrected path
+    const response = await api.post("/auth/google", id_token_object);
     return response.data;
   } catch (error) {
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Unknown Google authentication error."
+      "Erreur d'authentification Google inconnue."
     );
   }
 };
 
 export const logoutUser = async () => {
   try {
-    const response = await api.post("/api/auth/logout"); // Corrected path
+    const response = await api.post("/auth/logout");
     return response.data;
   } catch (error) {
     throw (
-      error.response?.data?.message || error.message || "Unknown logout error."
+      error.response?.data?.message ||
+      error.message ||
+      "Erreur de déconnexion inconnue."
     );
   }
 };
 
 export const checkAuthStatus = async () => {
   try {
-    const response = await api.get("/api/auth/status"); // Corrected path
+    const response = await api.get("/auth/status");
     return response.data;
   } catch (error) {
     if (
@@ -90,134 +94,136 @@ export const checkAuthStatus = async () => {
       return {
         isAuthenticated: false,
         user: null,
-        message: error.response.data?.message || "Unauthenticated",
+        message: error.response.data?.message || "Non authentifié",
       };
     }
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Unknown status check error."
+      "Erreur de vérification du statut inconnue."
     );
   }
 };
 
-// --- Protected Resources (General Example) ---
+// --- Ressources protégées (Exemple général) ---
 
 export const getProtectedResource = async () => {
   try {
-    const response = await api.get("/api/protected-resource"); // Corrected path
+    const response = await api.get("/protected-resource");
     return response.data;
   } catch (error) {
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Unknown protected resource error."
+      "Erreur de ressource protégée inconnue."
     );
   }
 };
 
-// --- User Profile Management Functions ---
+// --- Fonctions de gestion du profil utilisateur ---
 
 /**
- * Retrieves the profile of the logged-in user.
- * @returns {Promise<object>} The user profile data.
- * @throws {Error} If retrieval fails.
+ * Récupère le profil de l'utilisateur connecté.
+ * @returns {Promise<object>} Les données du profil utilisateur.
+ * @throws {Error} En cas d'échec de la récupération.
  */
 export const getUserProfile = async () => {
   try {
-    const response = await api.get("/api/user/profile");
+    const response = await api.get("/api/user/profile"); // Corrigé
     return response.data;
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    console.error(
+      "Erreur lors de la récupération du profil utilisateur:",
+      error
+    );
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Failed to retrieve user profile."
+      "Échec de la récupération du profil utilisateur."
     );
   }
 };
 
-// Updated updateUserProfile: uses the 'api' instance
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await api.put("/api/user/profile", profileData);
+    const response = await api.put("/api/user/profile", profileData); // Corrigé
     return response.data;
   } catch (error) {
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Failed to update profile."
+      "Échec de la mise à jour du profil."
     );
   }
 };
 
-// New function for uploading profile picture
 export const uploadProfilePicture = async (file) => {
-  try {
-    const formData = new FormData();
-    formData.append("profilePicture", file); // 'profilePicture' is the field name expected by your backend
+  const formData = new FormData();
+  formData.append("picture", file);
 
-    // Ensure your backend handles file uploads with Content-Type: multipart/form-data
-    // Using 'api.post' to ensure the JWT token is included in the headers
-    const response = await api.post("/api/users/profile/picture", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data", // This header is important for file uploads
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw (
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to upload profile picture."
-    );
+  const res = await fetch(
+    "https://olachris-back.onrender.com/api/users/upload-picture",
+    {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Échec de l'upload de l'image.");
   }
+
+  return res.json();
 };
 
 export const fetchRecentOrders = async () => {
   try {
-    const response = await api.get("/api/user/orders");
+    const response = await api.get("/api/user/orders"); // Corrigé
     return response.data;
   } catch (error) {
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Failed to retrieve orders."
+      "Échec de la récupération des commandes."
     );
   }
 };
 
-// --- Functions for Favorites ---
+// --- Fonctions pour les Favoris ---
 
 export const toggleFavoriteProduct = async (productId) => {
   try {
-    // IMPORTANT: Your backend MUST return an object with { isFavorite: boolean, favoriteProductIds: array_of_numbers }
-    // where favoriteProductIds is the COMPLETE and UPDATED list of user's favorite IDs.
-    const response = await api.post(`/api/user/favorites/toggle/${productId}`);
+    // IMPORTANT: Votre backend DOIT renvoyer un objet avec { isFavorite: boolean, favoriteProductIds: array_of_numbers }
+    // où favoriteProductIds est la LISTE COMPLÈTE et MISE À JOUR des IDs favoris de l'utilisateur.
+    const response = await api.post(`/api/user/favorites/toggle/${productId}`); // Corrigé
     return response.data;
   } catch (error) {
-    console.error("Error toggling favorite product:", error);
+    console.error("Erreur lors du basculement du produit favori:", error);
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Failed to toggle favorites."
+      "Échec du basculement des favoris."
     );
   }
 };
 
 export const fetchFavoriteProductIds = async () => {
   try {
-    const response = await api.get("/api/user/favorites");
-    // IMPORTANT: Your backend MUST return an object like { favoriteIds: [1, 5, 10] }
-    // OR directly an array of IDs like [1, 5, 10].
-    // This line handles both cases, but the backend must be correct.
+    const response = await api.get("/api/user/favorites"); // Corrigé
+    // IMPORTANT: Votre backend DOIT renvoyer un objet comme { favoriteIds: [1, 5, 10] }
+    // OU directement un tableau d'IDs comme [1, 5, 10].
+    // Cette ligne gère les deux cas, mais le backend doit être correct.
     return response.data.favoriteIds || response.data || [];
   } catch (error) {
-    console.error("Error fetching favorite product IDs:", error);
+    console.error(
+      "Erreur lors de la récupération des IDs de produits favoris:",
+      error
+    );
     throw (
       error.response?.data?.message ||
       error.message ||
-      "Failed to retrieve favorites."
+      "Échec de la récupération des favoris."
     );
   }
 };
