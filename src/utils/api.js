@@ -46,6 +46,8 @@ export const registerUser = async (userData) => {
 export const loginUser = async (credentials) => {
   try {
     const response = await api.post("/api/auth/login", credentials);
+    localStorage.setItem("token", response.data.token);
+
     return response.data;
   } catch (error) {
     throw (

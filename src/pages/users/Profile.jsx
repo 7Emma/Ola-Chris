@@ -285,7 +285,12 @@ function SupermarketProfile() {
           Vous devez être connecté pour accéder à cette page.
         </p>
         {/* Vous pourriez ajouter un bouton pour rediriger vers la connexion */}
-        <Link to="/login" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Se connecter</Link>
+        <Link
+          to="/login"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Se connecter
+        </Link>
       </div>
     );
   }
@@ -311,7 +316,7 @@ function SupermarketProfile() {
                 // Le label agit comme une zone cliquable pour l'input de fichier caché
                 <label
                   htmlFor="profile-picture-upload"
-                  className="absolute -bottom-1 -right-1 w-8 h-8 bg-green-600 rounded-full border-2 border-white flex items-center justify-center cursor-pointer hover:bg-green-700 transition"
+                  className="absolute -top-1 -right-1 w-8 h-8 bg-green-600 rounded-full border-2 border-white flex items-center justify-center cursor-pointer hover:bg-green-700 transition"
                   title="Changer la photo de profil"
                 >
                   <Camera className="w-4 h-4 text-white" />
@@ -324,6 +329,7 @@ function SupermarketProfile() {
                   />
                 </label>
               )}
+              {/* Badge de niveau utilisateur */}{" "}
               <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                 <span className="text-xs font-bold text-white">
                   {user.level ? user.level[0] : ""}
